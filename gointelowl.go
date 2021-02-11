@@ -1,6 +1,7 @@
 package gointelowl
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -15,14 +16,31 @@ type IntelOwlClient struct {
 	Certificate string
 }
 
-// Take url and IntelOwlClient and place request and return response
+// Take url and token and place get request and return response or log the error if any and exit the program.
 func buildAndMakeGetRequest(url string, token string) *http.Response {
 	request, err := http.NewRequest("GET", url, nil)
-	request.Header.Add("Authorization", "Token "+token)
-	request.Header.Add("User-Agent", "IntelOwlClient/3.0.1")
 	if err != nil {
 		log.Fatalln(err)
 	}
+	request.Header.Add("Authorization", "Token "+token)
+	request.Header.Add("User-Agent", "IntelOwlClient/3.0.1")
+	httpClient := http.Client{}
+	response, err := httpClient.Do(request)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Println(url, response.StatusCode)
+	return response
+}
+
+// Take url, token and body, and place post request and return response or log the error if any and exit the program
+func buildAndMakePostRequest(url string, token string, body []byte) *http.Response {
+	request, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	if err != nil {
+		log.Fatalln(err)
+	}
+	request.Header.Add("Authorization", "Token "+token)
+	request.Header.Add("User-Agent", "IntelOwlClient/3.0.1")
 	httpClient := http.Client{}
 	response, err := httpClient.Do(request)
 	if err != nil {
