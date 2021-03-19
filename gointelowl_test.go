@@ -36,7 +36,7 @@ func TestBuildAndMakeGetRequest(t *testing.T) {
 }
 
 func TestBuildAndMakePostRequest(t *testing.T) {
-	URL := "https://jsonplaceholder.typicode.com/posts"
+	URL := "https://reqres.in/api/users"
 	response := buildAndMakePostRequest(URL, "", []byte("{}"))
 	if response.StatusCode != http.StatusCreated {
 		log.Fatalln("Expected status code : ", http.StatusOK, " got : ", response.StatusCode)
