@@ -98,3 +98,13 @@ func (client *IntelOwlClient) GetAnalyzerConfigs() string {
 	}
 	return string(analyzerConfig)
 }
+
+func (client *IntelOwlClient) GetConnectorConfigs() string {
+	url := client.URL + "/api/get_connector_configs"
+	response := buildAndMakeGetRequest(url, client.Token)
+	connectorConfig, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return string(connectorConfig)
+}
