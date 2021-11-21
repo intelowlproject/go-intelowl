@@ -72,10 +72,10 @@ func (client *IntelOwlClient) GetAllTags() []map[string]string {
 //		  Endpoint: ``/api/jobs``
 //  Returns:
 //	      []map[string]string: Slice of Jobs
-func (client *IntelOwlClient) GetAllJobs() []map[string]string {
+func (client *IntelOwlClient) GetAllJobs() []map[string]interface{} {
 	url := client.URL + "/api/jobs"
 	response := buildAndMakeGetRequest(url, client.Token)
-	var jobs []map[string]string
+	var jobs []map[string]interface{}
 	data, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Fatalln(err)
