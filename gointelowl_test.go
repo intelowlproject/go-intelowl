@@ -3,12 +3,23 @@ package gointelowl
 import (
 	"log"
 	"net/http"
+	"os"
 	"reflect"
 	"testing"
+
+	"github.com/joho/godotenv"
 )
 
+func loadEnvVariables(key string) string {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalln("Error loading .env file")
+	}
+	return os.Getenv("TOKEN")
+}
+
 func TestIntelOwlClient(t *testing.T) {
-	Token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ"
+	Token := loadEnvVariables("TOKEN")
 	URL := "http://localhost:8080"
 	client := IntelOwlClient{
 		Token:       Token,
