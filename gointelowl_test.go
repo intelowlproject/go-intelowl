@@ -1,6 +1,7 @@
 package gointelowl
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"reflect"
@@ -40,5 +41,18 @@ func TestBuildAndMakePostRequest(t *testing.T) {
 	response := buildAndMakePostRequest(URL, "", []byte("{}"))
 	if response.StatusCode != http.StatusCreated {
 		log.Fatalln("Expected status code : ", http.StatusOK, " got : ", response.StatusCode)
+	}
+}
+
+func TestGetAllJobs(t *testing.T) {
+	client := IntelOwlClient{
+		Token:       "95830471d0bc0c0595228f890c20beea",
+		URL:         "http://localhost:80",
+		Certificate: "",
+	}
+	jobs := client.GetAllJobs()
+	fmt.Println(len(jobs))
+	if len(jobs) == 0 {
+		log.Fatalln("Expected jobs to be greater than 0")
 	}
 }
