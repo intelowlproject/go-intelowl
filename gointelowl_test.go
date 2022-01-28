@@ -2,14 +2,13 @@ package gointelowl
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"reflect"
 	"testing"
 )
 
 func TestIntelOwlClient(t *testing.T) {
-	Token := "ddaa4c2fdf53c213de4b862de1c4518e"
+	Token := ""
 	URL := "http://localhost"
 	client := CreateClient(
 		Token,
@@ -29,7 +28,7 @@ func TestIntelOwlClient(t *testing.T) {
 }
 
 func TestGetAllJobs(t *testing.T) {
-	Token := "ddaa4c2fdf53c213de4b862de1c4518e"
+	Token := ""
 	URL := "http://localhost"
 	client := CreateClient(
 		Token,
@@ -42,14 +41,12 @@ func TestGetAllJobs(t *testing.T) {
 		log.Fatalln("Error while testing GetAllJobs: ", err)
 	}
 
-	for _, job := range jobs {
-		fmt.Println(job.id) // Iterate over first job ID.
-	}
+	log.Println("ID of the first job is:", jobs[0].id)
 	log.Println("GetAllJobs() works!")
 }
 
 func TestGetAllTags(t *testing.T) {
-	Token := "ddaa4c2fdf53c213de4b862de1c4518e"
+	Token := ""
 	URL := "http://localhost"
 	client := CreateClient(
 		Token,
@@ -62,9 +59,7 @@ func TestGetAllTags(t *testing.T) {
 		log.Fatalln("Error while testing GetAllJobs: ", err)
 	}
 
-	for _, tag := range tags {
-		fmt.Println(tag.id) // Iterate over first tag ID.
-	}
+	log.Println("ID of the first tag is:", tags[0].id)
 	log.Println("GetAllTags() works!")
 
 }
