@@ -80,6 +80,7 @@ func (tag *Tag) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) 
 	return &createdTag, nil
 }
 
+//* Updating a tag
 func (tag *Tag) Update(ctx context.Context, tagId uint64, tagParams *TagParams) (*Tag, error) {
 	requestUrl := fmt.Sprintf("%s/api/tags/%d", tag.client.options.Url, tagId)
 	// printing the request
@@ -101,6 +102,7 @@ func (tag *Tag) Update(ctx context.Context, tagId uint64, tagParams *TagParams) 
 	return &updatedTag, nil
 }
 
+//* Deleting a tag
 func (tag *Tag) Delete(ctx context.Context, tagId uint64) (bool, error) {
 	requestUrl := fmt.Sprintf("%s/api/tags/%d", tag.client.options.Url, tagId)
 	// printing the request
@@ -120,6 +122,7 @@ func (tag *Tag) Delete(ctx context.Context, tagId uint64) (bool, error) {
 	return false, nil
 }
 
+//* Pretty printing the tag
 func (tag *Tag) Display() error {
 	data, err := json.MarshalIndent(tag, "", "\t")
 	if err != nil {
