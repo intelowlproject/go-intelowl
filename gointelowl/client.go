@@ -90,6 +90,9 @@ func (client *IntelOwlClient) makeRequest(ctx context.Context, request *http.Req
 	if err != nil {
 		fmt.Printf("Could not convert JSON response. Status code: %d", statusCode)
 	}
-	json.Unmarshal(msgBytes, &sucessResp.Data)
+	if err := json.Unmarshal(msgBytes, &sucessResp.Data); err != nil {
+		errorMessage := "could not convert parse JSON"
+		return errors.New(errorMessage)
+	}
 	return nil
 }
