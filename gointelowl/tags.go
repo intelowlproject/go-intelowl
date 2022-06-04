@@ -111,11 +111,6 @@ func (tag *Tag) Update(ctx context.Context, tagId uint64, tagParams *TagParams) 
 	}
 	json.Unmarshal(successResp.Data, &updatedTag)
 	return &updatedTag, nil
-	// updatedTag := Tag{}
-	// if err := tag.client.makeRequest(ctx, request, &updatedTag); err != nil {
-	// 	return nil, err
-	// }
-	// return &updatedTag, nil
 }
 
 //* Deleting a tag
