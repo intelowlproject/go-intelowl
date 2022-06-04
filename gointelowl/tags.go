@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -20,14 +21,12 @@ type Tag struct {
 	Color  string `json:"color"`
 }
 
-// Stubs for implementing the error interface
-type TagExistError struct {
-	Label []string `json:"label"`
-}
-
-type TagAttributeRequiredError struct {
-	Label []string `json:"label,omitempty"`
-	Color []string `json:"color,omitempty"`
+// * helper functions!
+func checkTagID(id uint64) error {
+	if id > 0 {
+		return nil
+	}
+	return errors.New("Tag ID cannot be 0")
 }
 
 // * getting on all tags
@@ -38,32 +37,40 @@ func (tag *Tag) List(ctx context.Context) (*[]Tag, error) {
 	if err != nil {
 		return nil, err
 	}
-	tagResponse := []Tag{}
-	if err := tag.client.makeRequest(ctx, request, &tagResponse); err != nil {
+	successResp, err := tag.client.makeRequest(ctx, request)
+	if err != nil {
 		return nil, err
 	}
-	return &tagResponse, nil
+	var tagList []Tag
+	json.Unmarshal(successResp.Data, &tagList)
+	return &tagList, nil
 }
 
 // * Getting a tag through its ID
 func (tag *Tag) Get(ctx context.Context, tagId uint64) (*Tag, error) {
+	if err := checkTagID(tagId); err != nil {
+		return nil, err
+	}
 	requestUrl := fmt.Sprintf("%s/api/tags/%d", tag.client.options.Url, tagId)
 	fmt.Println(requestUrl)
 	request, err := http.NewRequest("GET", requestUrl, nil)
 	if err != nil {
 		return nil, err
 	}
-	tagResponse := Tag{}
-	if err := tag.client.makeRequest(ctx, request, &tagResponse); err != nil {
+	var tagResponse Tag
+	successResp, err := tag.client.makeRequest(ctx, request)
+	if err != nil {
 		return nil, err
 	}
+	json.Unmarshal(successResp.Data, &tagResponse)
 	return &tagResponse, nil
 }
 
-//* Creating a Tag
+// //* Creating a Tag
 func (tag *Tag) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) {
 	requestUrl := fmt.Sprintf("%s/api/tags", tag.client.options.Url)
 	fmt.Println("Url: " + requestUrl)
+
 	tagJson, err := json.Marshal(tagParams)
 	fmt.Println(string(tagJson))
 	if err != nil {
@@ -73,10 +80,12 @@ func (tag *Tag) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) 
 	if err != nil {
 		return nil, err
 	}
-	createdTag := Tag{}
-	if err := tag.client.makeRequest(ctx, request, &createdTag); err != nil {
+	var createdTag Tag
+	successResp, err := tag.client.makeRequest(ctx, request)
+	if err != nil {
 		return nil, err
 	}
+	json.Unmarshal(successResp.Data, &createdTag)
 	return &createdTag, nil
 }
 
@@ -95,15 +104,25 @@ func (tag *Tag) Update(ctx context.Context, tagId uint64, tagParams *TagParams) 
 	if err != nil {
 		return nil, err
 	}
-	updatedTag := Tag{}
-	if err := tag.client.makeRequest(ctx, request, &updatedTag); err != nil {
+	var updatedTag Tag
+	successResp, err := tag.client.makeRequest(ctx, request)
+	if err != nil {
 		return nil, err
 	}
+	json.Unmarshal(successResp.Data, &updatedTag)
 	return &updatedTag, nil
+	// updatedTag := Tag{}
+	// if err := tag.client.makeRequest(ctx, request, &updatedTag); err != nil {
+	// 	return nil, err
+	// }
+	// return &updatedTag, nil
 }
 
 //* Deleting a tag
 func (tag *Tag) Delete(ctx context.Context, tagId uint64) (bool, error) {
+	if err := checkTagID(tagId); err != nil {
+		return false, err
+	}
 	requestUrl := fmt.Sprintf("%s/api/tags/%d", tag.client.options.Url, tagId)
 	// printing the request
 	fmt.Println("Url: " + requestUrl)
@@ -111,23 +130,18 @@ func (tag *Tag) Delete(ctx context.Context, tagId uint64) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	var data interface{}
-	if err := tag.client.makeRequest(ctx, request, &data); err != nil {
+	successResp, err := tag.client.makeRequest(ctx, request)
+	if err != nil {
 		return false, err
 	}
-	if data == nil {
-		fmt.Println("FUCK ME DADDY")
+	if successResp.StatusCode == 204 {
 		return true, nil
 	}
 	return false, nil
 }
 
-//* Pretty printing the tag
-func (tag *Tag) Display() error {
-	data, err := json.MarshalIndent(tag, "", "\t")
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(data))
-	return nil
+// Pretty printing the tag
+func (tag *Tag) Display() {
+	display := fmt.Sprintf("ID:%d\nLabel:%s\nColor:%s", tag.ID, tag.Label, tag.Color)
+	fmt.Println(display)
 }
