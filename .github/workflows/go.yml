@@ -19,18 +19,7 @@ jobs:
         go-version: 1.18
 
     - name: Build
-<<<<<<< HEAD
-<<<<<<< HEAD
       run: go build -v ./...
 
     - name: Test
       run: go test -v ./tests
-=======
-      run: go build -v ./
-=======
-      run: go build -v ./...
->>>>>>> c92608a (Fixing build error)
-
-    - name: Test
-      run: go test -v ./tests
->>>>>>> 681dba2 (Adding dependabot, PR template and setting up gh actions)
