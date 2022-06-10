@@ -19,7 +19,14 @@ jobs:
         go-version: 1.18
 
     - name: Build
+<<<<<<< HEAD
       run: go build -v ./...
 
     - name: Test
       run: go test -v ./tests
+=======
+      run: go build -v ./
+
+    - name: Test
+      run: go test -v ./tests
+>>>>>>> 681dba2 (Adding dependabot, PR template and setting up gh actions)

@@ -10,4 +10,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+<<<<<<< HEAD
       day: "tuesday"
+=======
+      day: "tuesday"
+>>>>>>> 681dba2 (Adding dependabot, PR template and setting up gh actions)
