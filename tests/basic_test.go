@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 package tests
-=======
-package testing
->>>>>>> 681dba2 (Adding dependabot, PR template and setting up gh actions)
 
 import "testing"
 
