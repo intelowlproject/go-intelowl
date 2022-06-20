@@ -26,15 +26,17 @@ type successResponse struct {
 }
 
 type IntelOwlClientOptions struct {
-	Url         string
-	Token       string
+	Url   string
+	Token string
+	// * so basically your SSL cert: path to the cert file!
 	Certificate string
 }
 
 type IntelOwlClient struct {
-	options *IntelOwlClientOptions
-	client  *http.Client
-	Tag     *Tag
+	options    *IntelOwlClientOptions
+	client     *http.Client
+	TagService *TagService
+	Analyzer   *Analyzer
 }
 
 func MakeNewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) IntelOwlClient {
@@ -45,7 +47,8 @@ func MakeNewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Clie
 		options: options,
 		client:  httpClient,
 	}
-	client.Tag = &Tag{client: &client}
+	client.TagService = &TagService{client: &client}
+	client.Analyzer = &Analyzer{client: &client}
 	return client
 }
 

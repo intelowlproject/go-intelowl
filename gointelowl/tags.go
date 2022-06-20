@@ -15,10 +15,14 @@ type TagParams struct {
 }
 
 type Tag struct {
+	ID    uint64 `json:"id"`
+	Label string `json:"label"`
+	Color string `json:"color"`
+}
+
+// * Service Object!
+type TagService struct {
 	client *IntelOwlClient
-	ID     uint64 `json:"id"`
-	Label  string `json:"label"`
-	Color  string `json:"color"`
 }
 
 // * helper functions!
@@ -30,14 +34,14 @@ func checkTagID(id uint64) error {
 }
 
 // * getting on all tags
-func (tag *Tag) List(ctx context.Context) (*[]Tag, error) {
-	requestUrl := fmt.Sprintf("%s/api/tags", tag.client.options.Url)
+func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
+	requestUrl := fmt.Sprintf("%s/api/tags", tagService.client.options.Url)
 	fmt.Println(requestUrl)
 	request, err := http.NewRequest("GET", requestUrl, nil)
 	if err != nil {
 		return nil, err
 	}
-	successResp, err := tag.client.makeRequest(ctx, request)
+	successResp, err := tagService.client.makeRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -47,18 +51,18 @@ func (tag *Tag) List(ctx context.Context) (*[]Tag, error) {
 }
 
 // * Getting a tag through its ID
-func (tag *Tag) Get(ctx context.Context, tagId uint64) (*Tag, error) {
+func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, error) {
 	if err := checkTagID(tagId); err != nil {
 		return nil, err
 	}
-	requestUrl := fmt.Sprintf("%s/api/tags/%d", tag.client.options.Url, tagId)
+	requestUrl := fmt.Sprintf("%s/api/tags/%d", tagService.client.options.Url, tagId)
 	fmt.Println(requestUrl)
 	request, err := http.NewRequest("GET", requestUrl, nil)
 	if err != nil {
 		return nil, err
 	}
 	var tagResponse Tag
-	successResp, err := tag.client.makeRequest(ctx, request)
+	successResp, err := tagService.client.makeRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -67,8 +71,8 @@ func (tag *Tag) Get(ctx context.Context, tagId uint64) (*Tag, error) {
 }
 
 // //* Creating a Tag
-func (tag *Tag) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) {
-	requestUrl := fmt.Sprintf("%s/api/tags", tag.client.options.Url)
+func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) {
+	requestUrl := fmt.Sprintf("%s/api/tags", tagService.client.options.Url)
 	fmt.Println("Url: " + requestUrl)
 
 	tagJson, err := json.Marshal(tagParams)
@@ -81,7 +85,7 @@ func (tag *Tag) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) 
 		return nil, err
 	}
 	var createdTag Tag
-	successResp, err := tag.client.makeRequest(ctx, request)
+	successResp, err := tagService.client.makeRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -90,8 +94,8 @@ func (tag *Tag) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) 
 }
 
 //* Updating a tag
-func (tag *Tag) Update(ctx context.Context, tagId uint64, tagParams *TagParams) (*Tag, error) {
-	requestUrl := fmt.Sprintf("%s/api/tags/%d", tag.client.options.Url, tagId)
+func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParams *TagParams) (*Tag, error) {
+	requestUrl := fmt.Sprintf("%s/api/tags/%d", tagService.client.options.Url, tagId)
 	// printing the request
 	fmt.Println("Url: " + requestUrl)
 
@@ -105,7 +109,7 @@ func (tag *Tag) Update(ctx context.Context, tagId uint64, tagParams *TagParams) 
 		return nil, err
 	}
 	var updatedTag Tag
-	successResp, err := tag.client.makeRequest(ctx, request)
+	successResp, err := tagService.client.makeRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -114,18 +118,18 @@ func (tag *Tag) Update(ctx context.Context, tagId uint64, tagParams *TagParams) 
 }
 
 //* Deleting a tag
-func (tag *Tag) Delete(ctx context.Context, tagId uint64) (bool, error) {
+func (tagService *TagService) Delete(ctx context.Context, tagId uint64) (bool, error) {
 	if err := checkTagID(tagId); err != nil {
 		return false, err
 	}
-	requestUrl := fmt.Sprintf("%s/api/tags/%d", tag.client.options.Url, tagId)
+	requestUrl := fmt.Sprintf("%s/api/tags/%d", tagService.client.options.Url, tagId)
 	// printing the request
 	fmt.Println("Url: " + requestUrl)
 	request, err := http.NewRequest("DELETE", requestUrl, nil)
 	if err != nil {
 		return false, err
 	}
-	successResp, err := tag.client.makeRequest(ctx, request)
+	successResp, err := tagService.client.makeRequest(ctx, request)
 	if err != nil {
 		return false, err
 	}
