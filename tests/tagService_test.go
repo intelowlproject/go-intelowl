@@ -89,7 +89,7 @@ func TestTagServiceGet(t *testing.T) {
 		statusCode: http.StatusNotFound,
 		want: &gointelowl.IntelOwlError{
 			StatusCode: http.StatusNotFound,
-			Data:       []byte(`{"detail": "Not found."}`),
+			Message:    `{"detail": "Not found."}`,
 		},
 	}
 	for name, testCase := range testCases {
@@ -150,7 +150,7 @@ func TestTagServiceCreate(t *testing.T) {
 		statusCode: http.StatusBadRequest,
 		want: &gointelowl.IntelOwlError{
 			StatusCode: http.StatusBadRequest,
-			Data:       []byte(`{"label":["tag with this label already exists."]}`),
+			Message:    `{"label":["tag with this label already exists."]}`,
 		},
 	}
 	for name, testCase := range testCases {
