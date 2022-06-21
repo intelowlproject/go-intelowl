@@ -1,5 +1,4 @@
 package gointelowl
-<<<<<<< HEAD
 
 import (
 	"context"
@@ -112,5 +111,3 @@ func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Requ
 	}
 	return &sucessResp, nil
 }
-=======
->>>>>>> 8ef3d1c (Added basic project structure)
