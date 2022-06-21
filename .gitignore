@@ -15,5 +15,9 @@
 # vendor/
 
 *.http
+<<<<<<< HEAD
 main.go
 .vscode
+=======
+main.go
+>>>>>>> 5c4a255 (Added Tag service object and unit tests)
