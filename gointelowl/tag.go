@@ -48,7 +48,11 @@ func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
 		return nil, err
 	}
 	var tagList []Tag
-	json.Unmarshal(successResp.Data, &tagList)
+	marashalError := json.Unmarshal(successResp.Data, &tagList)
+	if marashalError != nil {
+		return nil, marashalError
+	}
+
 	return &tagList, nil
 }
 
@@ -70,7 +74,10 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 	if err != nil {
 		return nil, err
 	}
-	json.Unmarshal(successResp.Data, &tagResponse)
+	unmarshalError := json.Unmarshal(successResp.Data, &tagResponse)
+	if unmarshalError != nil {
+		return nil, unmarshalError
+	}
 	return &tagResponse, nil
 }
 
@@ -79,6 +86,9 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 * Endpoint: POST "/api/tags/"
  */
 func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) {
+	// if tagParams.Label == "" || tagParams.Color == "" {
+	// 	return nil,
+	// }
 	requestUrl := fmt.Sprintf("%s/api/tags", tagService.client.options.Url)
 	tagJson, err := json.Marshal(tagParams)
 	if err != nil {
@@ -93,7 +103,10 @@ func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) 
 	if err != nil {
 		return nil, err
 	}
-	json.Unmarshal(successResp.Data, &createdTag)
+	unmarshalError := json.Unmarshal(successResp.Data, &createdTag)
+	if unmarshalError != nil {
+		return nil, unmarshalError
+	}
 	return &createdTag, nil
 }
 
@@ -117,7 +130,11 @@ func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParam
 	if err != nil {
 		return nil, err
 	}
-	json.Unmarshal(successResp.Data, &updatedTag)
+	unmarshalError := json.Unmarshal(successResp.Data, &updatedTag)
+	if unmarshalError != nil {
+		return nil, unmarshalError
+	}
+
 	return &updatedTag, nil
 }
 
