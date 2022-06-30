@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -50,7 +51,10 @@ func TestTagServiceList(t *testing.T) {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
 			testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte(testCase.input))
+				_, writeError := w.Write([]byte(testCase.input))
+				if writeError != nil {
+					fmt.Printf("Error: %s", writeError)
+				}
 			}))
 			defer testServer.Close()
 			client := gointelowl.MakeNewIntelOwlClient(
@@ -107,7 +111,10 @@ func TestTagServiceGet(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(testCase.statusCode)
-				w.Write([]byte(testCase.data))
+				_, writeError := w.Write([]byte(testCase.data))
+				if writeError != nil {
+					fmt.Printf("Error: %s", writeError)
+				}
 			}))
 			defer testServer.Close()
 			client := gointelowl.MakeNewIntelOwlClient(
@@ -174,7 +181,11 @@ func TestTagServiceCreate(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(testCase.statusCode)
-				w.Write([]byte(testCase.data))
+				_, err := w.Write([]byte(testCase.data))
+				if err != nil {
+					fmt.Printf("Error: %s", err)
+				}
+
 			}))
 			defer testServer.Close()
 			client := gointelowl.MakeNewIntelOwlClient(
@@ -230,7 +241,10 @@ func TestTagServiceUpdate(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(testCase.statusCode)
-				w.Write([]byte(testCase.data))
+				_, err := w.Write([]byte(testCase.data))
+				if err != nil {
+					fmt.Printf("Error: %s", err)
+				}
 			}))
 			defer testServer.Close()
 			client := gointelowl.MakeNewIntelOwlClient(
