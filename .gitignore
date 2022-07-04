@@ -16,3 +16,4 @@
 
 *.http
 main.go
+.vscode
