@@ -86,9 +86,6 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 * Endpoint: POST "/api/tags/"
  */
 func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) {
-	// if tagParams.Label == "" || tagParams.Color == "" {
-	// 	return nil,
-	// }
 	requestUrl := fmt.Sprintf("%s/api/tags", tagService.client.options.Url)
 	tagJson, err := json.Marshal(tagParams)
 	if err != nil {
@@ -157,7 +154,7 @@ func (tagService *TagService) Delete(ctx context.Context, tagId uint64) (bool, e
 	if err != nil {
 		return false, err
 	}
-	if successResp.StatusCode == 204 {
+	if successResp.StatusCode == http.StatusNoContent {
 		return true, nil
 	}
 	return false, nil

@@ -1,8 +1,7 @@
-package test
+package tests
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,60 +10,53 @@ import (
 	"github.com/intelowlproject/go-intelowl/gointelowl"
 )
 
+type TagTest struct {
+	input      interface{}
+	data       string
+	statusCode int
+	want       interface{}
+}
+
 // * Test for TagService.List method!
 func TestTagServiceList(t *testing.T) {
 	// * table test case
-	testCases := map[string]struct {
-		input string
-		want  []gointelowl.Tag
-	}{
-		"simple": {
-			input: `[
-				{"id": 1,"label": "TEST1","color": "#1c71d8"},
-				{"id": 2,"label": "TEST2","color": "#1c71d7"},
-				{"id": 3,"label": "TEST3","color": "#1c71d6"}
-			]`,
-			want: []gointelowl.Tag{
-				{
-					ID:    1,
-					Label: "TEST1",
-					Color: "#1c71d8",
-				},
-				{
-					ID:    2,
-					Label: "TEST2",
-					Color: "#1c71d7",
-				},
-				{
-					ID:    3,
-					Label: "TEST3",
-					Color: "#1c71d6",
-				},
+	testCases := make(map[string]TagTest)
+	testCases["simple"] = TagTest{
+		input: nil,
+		data: `[
+			{"id": 1,"label": "TEST1","color": "#1c71d8"},
+			{"id": 2,"label": "TEST2","color": "#1c71d7"},
+			{"id": 3,"label": "TEST3","color": "#1c71d6"}
+		]`,
+		statusCode: http.StatusOK,
+		want: []gointelowl.Tag{
+			{
+				ID:    1,
+				Label: "TEST1",
+				Color: "#1c71d8",
 			},
-		},
-		"empty": {
-			input: `[]`,
-			want:  []gointelowl.Tag{},
+			{
+				ID:    2,
+				Label: "TEST2",
+				Color: "#1c71d7",
+			},
+			{
+				ID:    3,
+				Label: "TEST3",
+				Color: "#1c71d6",
+			},
 		},
 	}
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				_, writeError := w.Write([]byte(testCase.input))
-				if writeError != nil {
-					fmt.Printf("Error: %s", writeError)
-				}
-			}))
+			testData := TestData{
+				StatusCode: testCase.statusCode,
+				Data:       testCase.data,
+			}
+			testServer := MakeNewTestServer(&testData)
 			defer testServer.Close()
-			client := gointelowl.MakeNewIntelOwlClient(
-				&gointelowl.IntelOwlClientOptions{
-					Url:         testServer.URL,
-					Token:       "test-token",
-					Certificate: "",
-				},
-				nil,
-			)
+			client := MakeNewTestIntelOwlClient(testServer.URL)
 			ctx := context.Background()
 			gottenTagList, err := client.TagService.List(ctx)
 			if err != nil {
@@ -80,63 +72,54 @@ func TestTagServiceList(t *testing.T) {
 
 func TestTagServiceGet(t *testing.T) {
 	// *table test case
-	testCases := map[string]struct {
-		input      uint64
-		data       string
-		statusCode int
-		want       interface{}
-	}{
-		"simple": {
-			input:      1,
-			data:       `{"id": 1,"label": "TEST","color": "#1c71d8"}`,
-			statusCode: 200,
-			want: &gointelowl.Tag{
-				ID:    1,
-				Label: "TEST",
-				Color: "#1c71d8",
-			},
+	testCases := make(map[string]TagTest)
+	testCases["simple"] = TagTest{
+		input:      1,
+		data:       `{"id": 1,"label": "TEST","color": "#1c71d8"}`,
+		statusCode: http.StatusOK,
+		want: &gointelowl.Tag{
+			ID:    1,
+			Label: "TEST",
+			Color: "#1c71d8",
 		},
-		"cantFind": {
-			input:      9000,
-			data:       `{"detail": "Not found."}`,
-			statusCode: 404,
-			want: &gointelowl.IntelOwlError{
-				StatusCode: 404,
-				Data:       []byte(`{"detail": "Not found."}`),
-			},
+	}
+	testCases["cantFind"] = TagTest{
+		input:      9000,
+		data:       `{"detail": "Not found."}`,
+		statusCode: http.StatusNotFound,
+		want: &gointelowl.IntelOwlError{
+			StatusCode: http.StatusNotFound,
+			Data:       []byte(`{"detail": "Not found."}`),
 		},
 	}
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(testCase.statusCode)
-				_, writeError := w.Write([]byte(testCase.data))
-				if writeError != nil {
-					fmt.Printf("Error: %s", writeError)
-				}
-			}))
+			testData := TestData{
+				StatusCode: testCase.statusCode,
+				Data:       testCase.data,
+			}
+			testServer := MakeNewTestServer(&testData)
 			defer testServer.Close()
-			client := gointelowl.MakeNewIntelOwlClient(
-				&gointelowl.IntelOwlClientOptions{
-					Url:         testServer.URL,
-					Token:       "test-token",
-					Certificate: "",
-				},
-				nil,
-			)
+			client := MakeNewTestIntelOwlClient(testServer.URL)
 			ctx := context.Background()
-			gottenTag, err := client.TagService.Get(ctx, testCase.input)
-			if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
-				diff := cmp.Diff(testCase.want, err)
-				if diff != "" {
-					t.Fatalf(diff)
+			id, ok := testCase.input.(int)
+			if ok {
+				tagId := uint64(id)
+				gottenTag, err := client.TagService.Get(ctx, tagId)
+				if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
+					diff := cmp.Diff(testCase.want, err)
+					if diff != "" {
+						t.Fatalf(diff)
+					}
+				} else {
+					diff := cmp.Diff(testCase.want, gottenTag)
+					if diff != "" {
+						t.Fatalf(diff)
+					}
 				}
 			} else {
-				diff := cmp.Diff(testCase.want, gottenTag)
-				if diff != "" {
-					t.Fatalf(diff)
-				}
+				t.Fatalf("Casting failed!")
 			}
 		})
 	}
@@ -144,70 +127,59 @@ func TestTagServiceGet(t *testing.T) {
 
 func TestTagServiceCreate(t *testing.T) {
 	// *table test case
-	testCases := map[string]struct {
-		input      *gointelowl.TagParams
-		data       string
-		statusCode int
-		want       interface{}
-	}{
-		"simple": {
-			input: &gointelowl.TagParams{
-				Label: "TEST TAG",
-				Color: "#fffff",
-			},
-			data:       `{"id": 1,"label": "TEST TAG","color": "#fffff"}`,
-			statusCode: 200,
-			want: &gointelowl.Tag{
-				ID:    1,
-				Label: "TEST TAG",
-				Color: "#fffff",
-			},
+	testCases := make(map[string]TagTest)
+	testCases["simple"] = TagTest{
+		input: gointelowl.TagParams{
+			Label: "TEST TAG",
+			Color: "#fffff",
 		},
-		"duplicate": {
-			input: &gointelowl.TagParams{
-				Label: "TEST TAG",
-				Color: "#fffff",
-			},
-			data:       `{"label":["tag with this label already exists."]}`,
-			statusCode: 400,
-			want: &gointelowl.IntelOwlError{
-				StatusCode: 400,
-				Data:       []byte(`{"label":["tag with this label already exists."]}`),
-			},
+		data:       `{"id": 1,"label": "TEST TAG","color": "#fffff"}`,
+		statusCode: http.StatusOK,
+		want: &gointelowl.Tag{
+			ID:    1,
+			Label: "TEST TAG",
+			Color: "#fffff",
+		},
+	}
+	testCases["duplicate"] = TagTest{
+		input: gointelowl.TagParams{
+			Label: "TEST TAG",
+			Color: "#fffff",
+		},
+		data:       `{"label":["tag with this label already exists."]}`,
+		statusCode: http.StatusBadRequest,
+		want: &gointelowl.IntelOwlError{
+			StatusCode: http.StatusBadRequest,
+			Data:       []byte(`{"label":["tag with this label already exists."]}`),
 		},
 	}
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(testCase.statusCode)
-				_, err := w.Write([]byte(testCase.data))
-				if err != nil {
-					fmt.Printf("Error: %s", err)
-				}
-
-			}))
+			testData := &TestData{
+				StatusCode: testCase.statusCode,
+				Data:       testCase.data,
+			}
+			testServer := MakeNewTestServer(testData)
 			defer testServer.Close()
-			client := gointelowl.MakeNewIntelOwlClient(
-				&gointelowl.IntelOwlClientOptions{
-					Url:         testServer.URL,
-					Token:       "test-token",
-					Certificate: "",
-				},
-				nil,
-			)
+			client := MakeNewTestIntelOwlClient(testServer.URL)
 			ctx := context.Background()
-			gottenTag, err := client.TagService.Create(ctx, testCase.input)
-			if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
-				diff := cmp.Diff(testCase.want, err)
-				if diff != "" {
-					t.Fatalf(diff)
+			tagParams, ok := testCase.input.(gointelowl.TagParams)
+			if ok {
+				gottenTag, err := client.TagService.Create(ctx, &tagParams)
+				if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
+					diff := cmp.Diff(testCase.want, err)
+					if diff != "" {
+						t.Fatalf(diff)
+					}
+				} else {
+					diff := cmp.Diff(testCase.want, gottenTag)
+					if diff != "" {
+						t.Fatalf(diff)
+					}
 				}
 			} else {
-				diff := cmp.Diff(testCase.want, gottenTag)
-				if diff != "" {
-					t.Fatalf(diff)
-				}
+				t.Fatalf("Casting failed!")
 			}
 		})
 	}
@@ -215,60 +187,48 @@ func TestTagServiceCreate(t *testing.T) {
 
 func TestTagServiceUpdate(t *testing.T) {
 	// *table test case
-	testCases := map[string]struct {
-		input      gointelowl.Tag
-		data       string
-		statusCode int
-		want       interface{}
-	}{
-		"simple": {
-			input: gointelowl.Tag{
-				ID:    1,
-				Label: "UPDATED TEST TAG",
-				Color: "#f4",
-			},
-			data:       `{"id": 1,"label": "UPDATED TEST TAG","color": "#f4"}`,
-			statusCode: 200,
-			want: &gointelowl.Tag{
-				ID:    1,
-				Label: "UPDATED TEST TAG",
-				Color: "#f4",
-			},
+	testCases := make(map[string]TagTest)
+	testCases["simple"] = TagTest{
+		input: gointelowl.Tag{
+			ID:    1,
+			Label: "UPDATED TEST TAG",
+			Color: "#f4",
+		},
+		data:       `{"id": 1,"label": "UPDATED TEST TAG","color": "#f4"}`,
+		statusCode: http.StatusOK,
+		want: &gointelowl.Tag{
+			ID:    1,
+			Label: "UPDATED TEST TAG",
+			Color: "#f4",
 		},
 	}
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(testCase.statusCode)
-				_, err := w.Write([]byte(testCase.data))
-				if err != nil {
-					fmt.Printf("Error: %s", err)
-				}
-			}))
+			testData := &TestData{
+				StatusCode: testCase.statusCode,
+				Data:       testCase.data,
+			}
+			testServer := MakeNewTestServer(testData)
 			defer testServer.Close()
-			client := gointelowl.MakeNewIntelOwlClient(
-				&gointelowl.IntelOwlClientOptions{
-					Url:         testServer.URL,
-					Token:       "test-token",
-					Certificate: "",
-				},
-				nil,
-			)
+			client := MakeNewTestIntelOwlClient(testServer.URL)
 			ctx := context.Background()
-			gottenTag, err := client.TagService.Update(ctx, testCase.input.ID, &gointelowl.TagParams{
-				Label: testCase.input.Label,
-				Color: testCase.input.Color,
-			})
-			if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
-				diff := cmp.Diff(testCase.want, err)
-				if diff != "" {
-					t.Fatalf(diff)
-				}
-			} else {
-				diff := cmp.Diff(testCase.want, gottenTag)
-				if diff != "" {
-					t.Fatalf(diff)
+			tag, ok := testCase.input.(gointelowl.Tag)
+			if ok {
+				gottenTag, err := client.TagService.Update(ctx, tag.ID, &gointelowl.TagParams{
+					Label: tag.Label,
+					Color: tag.Color,
+				})
+				if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
+					diff := cmp.Diff(testCase.want, err)
+					if diff != "" {
+						t.Fatalf(diff)
+					}
+				} else {
+					diff := cmp.Diff(testCase.want, gottenTag)
+					if diff != "" {
+						t.Fatalf(diff)
+					}
 				}
 			}
 		})
@@ -277,17 +237,12 @@ func TestTagServiceUpdate(t *testing.T) {
 
 func TestTagServiceDelete(t *testing.T) {
 	// *table test case
-	testCases := map[string]struct {
-		input      uint64
-		data       string
-		statusCode int
-		want       interface{}
-	}{
-		"simple": {
-			input:      1,
-			statusCode: 204,
-			want:       true,
-		},
+	testCases := make(map[string]TagTest)
+	testCases["simple"] = TagTest{
+		input:      1,
+		data:       "",
+		statusCode: http.StatusNoContent,
+		want:       true,
 	}
 	for name, testCase := range testCases {
 		//* Subtest
@@ -305,51 +260,22 @@ func TestTagServiceDelete(t *testing.T) {
 				nil,
 			)
 			ctx := context.Background()
-			isDeleted, err := client.TagService.Delete(ctx, testCase.input)
-			if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
-				diff := cmp.Diff(testCase.want, err)
-				if diff != "" {
-					t.Fatalf(diff)
-				}
-			} else {
-				diff := cmp.Diff(testCase.want, isDeleted)
-				if diff != "" {
-					t.Fatalf(diff)
+			id, ok := testCase.input.(int)
+			if ok {
+				tagId := uint64(id)
+				isDeleted, err := client.TagService.Delete(ctx, tagId)
+				if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
+					diff := cmp.Diff(testCase.want, err)
+					if diff != "" {
+						t.Fatalf(diff)
+					}
+				} else {
+					diff := cmp.Diff(testCase.want, isDeleted)
+					if diff != "" {
+						t.Fatalf(diff)
+					}
 				}
 			}
 		})
 	}
 }
-
-// func TestTagServiceGet(t *testing.T) {
-// 	testServer := httptest.NewServer(http.HandlerFunc(func(w htsstp.ResponseWriter, r *http.Request) {
-// 		// expected := `{
-// 		// 	"id": 1,
-// 		// 	"label": "TEST",
-// 		// 	"color": "#1c71d8"
-// 		//   }`
-// 		expected := `{"id": 1,"label": "TEST","color": "#1c71d8"}`
-// 		// tagJson, _ := json.Marshal(expected)
-// 		// fmt.Println(tagJson)
-// 		w.Write([]byte(expected))
-// 	}))
-// 	defer testServer.Close()
-// 	client := gointelowl.MakeNewIntelOwlClient(
-// 		&gointelowl.IntelOwlClientOptions{
-// 			Url:         testServer.URL,
-// 			Token:       "test-token",
-// 			Certificate: "",
-// 		},
-// 		nil,
-// 	)
-
-// 	ctx := context.Background()
-// 	tag, err := client.TagService.Get(ctx, 1)
-// 	if err != nil {
-// 		t.Errorf("Error in getting tag: %v", err)
-// 	}
-// 	tag.Display()
-// 	if reflect.TypeOf((*tag)) != reflect.TypeOf(gointelowl.Tag{}) {
-// 		t.Errorf("Expected Tag")
-// 	}
-// }
