@@ -8,10 +8,6 @@ import (
 	"time"
 )
 
-type IsRequiredError struct {
-	Detail string
-}
-
 type IntelOwlError struct {
 	StatusCode int
 	Data       []byte
