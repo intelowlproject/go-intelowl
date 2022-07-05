@@ -1,5 +1,4 @@
 package gointelowl
-
 import (
 	"context"
 	"errors"
