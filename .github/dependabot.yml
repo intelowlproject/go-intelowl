@@ -11,4 +11,3 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday" 
-
