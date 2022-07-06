@@ -20,6 +20,14 @@ func (intelOwlError *IntelOwlError) Error() string {
 	return errorMessage
 }
 
+func newIntelOwlError(statusCode int, data []byte, response *http.Response) *IntelOwlError {
+	return &IntelOwlError{
+		StatusCode: statusCode,
+		Data:       data,
+		Response:   response,
+	}
+}
+
 type successResponse struct {
 	StatusCode int
 	Data       []byte
@@ -83,32 +91,18 @@ func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Requ
 		msgBytes, err := ioutil.ReadAll(response.Body)
 		if err != nil {
 			errorMessage := fmt.Sprintf("Could not convert JSON response. Status code: %d", statusCode)
-			errorMessageBytes := []byte(errorMessage)
-			intelOwlError := IntelOwlError{
-				StatusCode: statusCode,
-				Data:       errorMessageBytes,
-				Response:   response,
-			}
-			return nil, &intelOwlError
+			intelOwlError := newIntelOwlError(statusCode, []byte(errorMessage), response)
+			return nil, intelOwlError
 		}
-		intelOwlError := IntelOwlError{
-			StatusCode: statusCode,
-			Data:       msgBytes,
-			Response:   response,
-		}
-		return nil, &intelOwlError
+		intelOwlError := newIntelOwlError(statusCode, msgBytes, response)
+		return nil, intelOwlError
 	}
 
 	msgBytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Could not convert JSON response. Status code: %d", statusCode)
-		errorMessageBytes := []byte(errorMessage)
-		intelOwlError := IntelOwlError{
-			StatusCode: statusCode,
-			Data:       errorMessageBytes,
-			Response:   response,
-		}
-		return nil, &intelOwlError
+		intelOwlError := newIntelOwlError(statusCode, []byte(errorMessage), response)
+		return nil, intelOwlError
 	}
 	sucessResp := successResponse{
 		StatusCode: statusCode,
