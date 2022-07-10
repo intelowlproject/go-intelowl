@@ -63,5 +63,9 @@ jobs:
     # - run: |
     #   echo "Run, Build Application using script"
     #   ./location_of_script_within_repo/buildscript.sh
+<<<<<<< HEAD
+=======
+
+>>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

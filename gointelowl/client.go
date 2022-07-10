@@ -1,7 +1,13 @@
 package gointelowl
+<<<<<<< HEAD
 
 import (
 	"context"
+=======
+import (
+	"context"
+	"errors"
+>>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -11,7 +17,10 @@ import (
 type IntelOwlError struct {
 	StatusCode int
 	Data       []byte
+<<<<<<< HEAD
 	Response   *http.Response
+=======
+>>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 }
 
 // * implementing the error interface
@@ -39,7 +48,11 @@ type IntelOwlClient struct {
 	TagService *TagService
 }
 
+<<<<<<< HEAD
 func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) IntelOwlClient {
+=======
+func MakeNewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) IntelOwlClient {
+>>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 
 	if options.Timeout == 0 {
 		options.Timeout = time.Duration(10) * time.Second
@@ -54,6 +67,7 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) 
 		options: options,
 		client:  httpClient,
 	}
+<<<<<<< HEAD
 	client.TagService = &TagService{
 		client: &client,
 	}
@@ -61,6 +75,13 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) 
 }
 
 func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Request) (*successResponse, error) {
+=======
+	client.TagService = &TagService{client: &client}
+	return client
+}
+
+func (client *IntelOwlClient) makeRequest(ctx context.Context, request *http.Request) (*successResponse, error) {
+>>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 	request = request.WithContext(ctx)
 
 	request.Header.Set("Content-Type", "application/json")
@@ -70,7 +91,10 @@ func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Requ
 	request.Header.Set("Authorization", tokenString)
 	response, err := client.client.Do(request)
 
+<<<<<<< HEAD
 	// * Checking for context errors such as reaching the deadline and/or Timeout
+=======
+>>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 	if err != nil {
 		select {
 		case <-ctx.Done():
@@ -87,6 +111,7 @@ func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Requ
 		msgBytes, err := ioutil.ReadAll(response.Body)
 		if err != nil {
 			errorMessage := fmt.Sprintf("Could not convert JSON response. Status code: %d", statusCode)
+<<<<<<< HEAD
 			errorMessageBytes := []byte(errorMessage)
 			intelOwlError := IntelOwlError{
 				StatusCode: statusCode,
@@ -94,17 +119,24 @@ func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Requ
 				Response:   response,
 			}
 			return nil, &intelOwlError
+=======
+			return nil, errors.New(errorMessage)
+>>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 		}
 		intelOwlError := IntelOwlError{
 			StatusCode: statusCode,
 			Data:       msgBytes,
+<<<<<<< HEAD
 			Response:   response,
+=======
+>>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 		}
 		return nil, &intelOwlError
 	}
 
 	msgBytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
+<<<<<<< HEAD
 		errorMessage := fmt.Sprintf("Could not convert JSON response. Status code: %d", statusCode)
 		errorMessageBytes := []byte(errorMessage)
 		intelOwlError := IntelOwlError{
@@ -113,6 +145,9 @@ func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Requ
 			Response:   response,
 		}
 		return nil, &intelOwlError
+=======
+		fmt.Printf("Could not convert JSON response. Status code: %d", statusCode)
+>>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 	}
 	sucessResp := successResponse{
 		StatusCode: statusCode,
