@@ -43,11 +43,7 @@ func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
 	if err != nil {
 		return nil, err
 	}
-<<<<<<< HEAD
 	successResp, err := tagService.client.newRequest(ctx, request)
-=======
-	successResp, err := tagService.client.makeRequest(ctx, request)
->>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 	if err != nil {
 		return nil, err
 	}
@@ -74,11 +70,7 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 		return nil, err
 	}
 	var tagResponse Tag
-<<<<<<< HEAD
 	successResp, err := tagService.client.newRequest(ctx, request)
-=======
-	successResp, err := tagService.client.makeRequest(ctx, request)
->>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 	if err != nil {
 		return nil, err
 	}
@@ -104,11 +96,7 @@ func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) 
 		return nil, err
 	}
 	var createdTag Tag
-<<<<<<< HEAD
 	successResp, err := tagService.client.newRequest(ctx, request)
-=======
-	successResp, err := tagService.client.makeRequest(ctx, request)
->>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 	if err != nil {
 		return nil, err
 	}
@@ -135,11 +123,7 @@ func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParam
 		return nil, err
 	}
 	var updatedTag Tag
-<<<<<<< HEAD
 	successResp, err := tagService.client.newRequest(ctx, request)
-=======
-	successResp, err := tagService.client.makeRequest(ctx, request)
->>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 	if err != nil {
 		return nil, err
 	}
@@ -166,11 +150,7 @@ func (tagService *TagService) Delete(ctx context.Context, tagId uint64) (bool, e
 	if err != nil {
 		return false, err
 	}
-<<<<<<< HEAD
 	successResp, err := tagService.client.newRequest(ctx, request)
-=======
-	successResp, err := tagService.client.makeRequest(ctx, request)
->>>>>>> fdde6f08176939476d9ae8c7efed93b8aed0eb51
 	if err != nil {
 		return false, err
 	}
