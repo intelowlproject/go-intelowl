@@ -28,7 +28,7 @@ func MakeNewTestServer(testData *TestData) *httptest.Server {
 }
 
 func MakeNewTestIntelOwlClient(url string) gointelowl.IntelOwlClient {
-	return gointelowl.MakeNewIntelOwlClient(
+	return gointelowl.NewIntelOwlClient(
 		&gointelowl.IntelOwlClientOptions{
 			Url:         url,
 			Token:       "test-token",

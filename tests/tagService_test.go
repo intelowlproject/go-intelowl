@@ -3,10 +3,10 @@ package tests
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/intelowlproject/go-intelowl/gointelowl"
 )
 
@@ -108,7 +108,7 @@ func TestTagServiceGet(t *testing.T) {
 				tagId := uint64(id)
 				gottenTag, err := client.TagService.Get(ctx, tagId)
 				if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.want, err)
+					diff := cmp.Diff(testCase.want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
 					if diff != "" {
 						t.Fatalf(diff)
 					}
@@ -168,7 +168,7 @@ func TestTagServiceCreate(t *testing.T) {
 			if ok {
 				gottenTag, err := client.TagService.Create(ctx, &tagParams)
 				if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.want, err)
+					diff := cmp.Diff(testCase.want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
 					if diff != "" {
 						t.Fatalf(diff)
 					}
@@ -220,7 +220,7 @@ func TestTagServiceUpdate(t *testing.T) {
 					Color: tag.Color,
 				})
 				if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.want, err)
+					diff := cmp.Diff(testCase.want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
 					if diff != "" {
 						t.Fatalf(diff)
 					}
@@ -247,25 +247,20 @@ func TestTagServiceDelete(t *testing.T) {
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(testCase.statusCode)
-			}))
+			testData := &TestData{
+				StatusCode: testCase.statusCode,
+				Data:       testCase.data,
+			}
+			testServer := MakeNewTestServer(testData)
 			defer testServer.Close()
-			client := gointelowl.MakeNewIntelOwlClient(
-				&gointelowl.IntelOwlClientOptions{
-					Url:         testServer.URL,
-					Token:       "test-token",
-					Certificate: "",
-				},
-				nil,
-			)
+			client := MakeNewTestIntelOwlClient(testServer.URL)
 			ctx := context.Background()
 			id, ok := testCase.input.(int)
 			if ok {
 				tagId := uint64(id)
 				isDeleted, err := client.TagService.Delete(ctx, tagId)
 				if testCase.statusCode < http.StatusOK || testCase.statusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.want, err)
+					diff := cmp.Diff(testCase.want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
 					if diff != "" {
 						t.Fatalf(diff)
 					}
