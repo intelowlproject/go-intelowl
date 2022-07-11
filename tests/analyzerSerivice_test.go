@@ -73,9 +73,9 @@ func TestAnalyzerServiceGetConfigs(t *testing.T) {
 				StatusCode: testCase.statusCode,
 				Data:       testCase.data,
 			}
-			testServer := MakeNewTestServer(&testData)
+			testServer := NewTestServer(&testData)
 			defer testServer.Close()
-			client := MakeNewTestIntelOwlClient(testServer.URL)
+			client := NewTestIntelOwlClient(testServer.URL)
 			ctx := context.Background()
 			gottenAnalyzerConfigList, err := client.AnalyzerService.GetConfigs(ctx)
 			if err != nil {

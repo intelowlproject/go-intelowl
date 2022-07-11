@@ -13,7 +13,7 @@ type TestData struct {
 	Data       string
 }
 
-func MakeNewTestServer(testData *TestData) *httptest.Server {
+func NewTestServer(testData *TestData) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if testData.StatusCode > 0 {
 			w.WriteHeader(testData.StatusCode)
@@ -27,7 +27,7 @@ func MakeNewTestServer(testData *TestData) *httptest.Server {
 	}))
 }
 
-func MakeNewTestIntelOwlClient(url string) gointelowl.IntelOwlClient {
+func NewTestIntelOwlClient(url string) gointelowl.IntelOwlClient {
 	return gointelowl.NewIntelOwlClient(
 		&gointelowl.IntelOwlClientOptions{
 			Url:         url,
