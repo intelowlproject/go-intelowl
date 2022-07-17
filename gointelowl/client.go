@@ -46,6 +46,8 @@ type IntelOwlClient struct {
 	client     *http.Client
 	TagService *TagService
 	JobService *JobService
+	AnalyzerService  *AnalyzerService
+	ConnectorService *ConnectorService
 }
 
 func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) IntelOwlClient {
@@ -67,6 +69,12 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) 
 		client: &client,
 	}
 	client.JobService = &JobService{
+    client: &client,
+	}
+	client.AnalyzerService = &AnalyzerService{
+		client: &client,
+	}
+	client.ConnectorService = &ConnectorService{
 		client: &client,
 	}
 	return client
