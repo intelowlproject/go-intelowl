@@ -64,12 +64,3 @@ func (connectorService *ConnectorService) HealthCheck(ctx context.Context, conne
 	}
 	return status.Status, nil
 }
-
-func (connectorConfig *ConnectorConfig) Display() error {
-	jsonBytes, err := json.Marshal(connectorConfig)
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(jsonBytes))
-	return nil
-}

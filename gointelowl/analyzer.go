@@ -80,12 +80,3 @@ func (analyzerService *AnalyzerService) HealthCheck(ctx context.Context, analyze
 	}
 	return status.Status, nil
 }
-
-func (analyzerConfig *AnalyzerConfig) Display() error {
-	jsonBytes, err := json.Marshal(analyzerConfig)
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(jsonBytes))
-	return nil
-}

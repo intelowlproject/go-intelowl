@@ -61,46 +61,46 @@ func TestConnectorServiceGetConfigs(t *testing.T) {
 	}
 }
 
-// func TestConnectorServiceHealthCheck(t *testing.T) {
-// 	// * table test cases
-// 	testCases := make(map[string]TestData)
-// 	testCases["simple"] = TestData{
-// 		Input:      "OpenCTI",
-// 		Data:       `{"status": false}`,
-// 		StatusCode: http.StatusOK,
-// 		Want:       false,
-// 	}
-// 	testCases["connectorDoesntExist"] = TestData{
-// 		Input:      "notAConnector",
-// 		Data:       `{"errors": {"detail": "Connector doesn't exist"}}`,
-// 		StatusCode: http.StatusBadRequest,
-// 		Want: &gointelowl.IntelOwlError{
-// 			StatusCode: http.StatusBadRequest,
-// 			Message:    `{"errors": {"detail": "Connector doesn't exist"}}`,
-// 		},
-// 	}
-// 	for name, testCase := range testCases {
-// 		// *Subtest
-// 		t.Run(name, func(t *testing.T) {
-// 			testServer := NewTestServer(&testCase)
-// 			defer testServer.Close()
-// 			client := NewTestIntelOwlClient(testServer.URL)
-// 			ctx := context.Background()
-// 			input, ok := testCase.Input.(string)
-// 			if ok {
-// 				status, err := client.AnalyzerService.HealthCheck(ctx, input)
-// 				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-// 					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-// 					if diff != "" {
-// 						t.Fatalf(diff)
-// 					}
-// 				} else {
-// 					diff := cmp.Diff(testCase.Want, status)
-// 					if diff != "" {
-// 						t.Fatalf(diff)
-// 					}
-// 				}
-// 			}
-// 		})
-// 	}
-// }
+func TestConnectorServiceHealthCheck(t *testing.T) {
+	// * table test cases
+	testCases := make(map[string]TestData)
+	testCases["simple"] = TestData{
+		Input:      "OpenCTI",
+		Data:       `{"status": false}`,
+		StatusCode: http.StatusOK,
+		Want:       false,
+	}
+	testCases["connectorDoesntExist"] = TestData{
+		Input:      "notAConnector",
+		Data:       `{"errors": {"detail": "Connector doesn't exist"}}`,
+		StatusCode: http.StatusBadRequest,
+		Want: &gointelowl.IntelOwlError{
+			StatusCode: http.StatusBadRequest,
+			Message:    `{"errors": {"detail": "Connector doesn't exist"}}`,
+		},
+	}
+	for name, testCase := range testCases {
+		// *Subtest
+		t.Run(name, func(t *testing.T) {
+			testServer := NewTestServer(&testCase)
+			defer testServer.Close()
+			client := NewTestIntelOwlClient(testServer.URL)
+			ctx := context.Background()
+			input, ok := testCase.Input.(string)
+			if ok {
+				status, err := client.AnalyzerService.HealthCheck(ctx, input)
+				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
+					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
+					if diff != "" {
+						t.Fatalf(diff)
+					}
+				} else {
+					diff := cmp.Diff(testCase.Want, status)
+					if diff != "" {
+						t.Fatalf(diff)
+					}
+				}
+			}
+		})
+	}
+}
