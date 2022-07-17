@@ -42,9 +42,11 @@ type IntelOwlClientOptions struct {
 }
 
 type IntelOwlClient struct {
-	options    *IntelOwlClientOptions
-	client     *http.Client
-	TagService *TagService
+	options          *IntelOwlClientOptions
+	client           *http.Client
+	TagService       *TagService
+	AnalyzerService  *AnalyzerService
+	ConnectorService *ConnectorService
 }
 
 func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) IntelOwlClient {
@@ -63,6 +65,12 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) 
 		client:  httpClient,
 	}
 	client.TagService = &TagService{
+		client: &client,
+	}
+	client.AnalyzerService = &AnalyzerService{
+		client: &client,
+	}
+	client.ConnectorService = &ConnectorService{
 		client: &client,
 	}
 	return client
