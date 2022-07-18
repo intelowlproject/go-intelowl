@@ -24,35 +24,44 @@ type Report struct {
 	Type                 string                 `json:"type"`
 }
 
-type Job struct {
-	ID                       int                    `json:"id"`
-	User                     UserDetails            `json:"user"`
-	Tags                     []Tag                  `json:"tags"`
-	ProcessTime              float64                `json:"process_time"`
-	AnalyzerReports          []Report               `json:"analyzer_reports,omitempty"`
-	ConnectorReports         []Report               `json:"connector_reports,omitempty"`
-	Permission               map[string]interface{} `json:"permission,omitempty"`
-	IsSample                 bool                   `json:"is_sample"`
-	Md5                      string                 `json:"md5"`
-	ObservableName           string                 `json:"observable_name"`
-	ObservableClassification string                 `json:"observable_classification"`
-	FileName                 string                 `json:"file_name"`
-	FileMimetype             string                 `json:"file_mimetype"`
-	Status                   string                 `json:"status"`
-	AnalyzersRequested       []string               `json:"analyzers_requested" `
-	ConnectorsRequested      []string               `json:"connectors_requested"`
-	AnalyzersToExecute       []string               `json:"analyzers_to_execute"`
-	ConnectorsToExecute      []string               `json:"connectors_to_execute"`
-	ReceivedRequestTime      *time.Time             `json:"received_request_time"`
-	FinishedAnalysisTime     *time.Time             `json:"finished_analysis_time"`
-	Tlp                      string                 `json:"tlp"`
-	Errors                   []string               `json:"errors"`
+type BaseJob struct {
+	ID                       int         `json:"id"`
+	User                     UserDetails `json:"user"`
+	Tags                     []Tag       `json:"tags"`
+	ProcessTime              float64     `json:"process_time"`
+	IsSample                 bool        `json:"is_sample"`
+	Md5                      string      `json:"md5"`
+	ObservableName           string      `json:"observable_name"`
+	ObservableClassification string      `json:"observable_classification"`
+	FileName                 string      `json:"file_name"`
+	FileMimetype             string      `json:"file_mimetype"`
+	Status                   string      `json:"status"`
+	AnalyzersRequested       []string    `json:"analyzers_requested" `
+	ConnectorsRequested      []string    `json:"connectors_requested"`
+	AnalyzersToExecute       []string    `json:"analyzers_to_execute"`
+	ConnectorsToExecute      []string    `json:"connectors_to_execute"`
+	ReceivedRequestTime      *time.Time  `json:"received_request_time"`
+	FinishedAnalysisTime     *time.Time  `json:"finished_analysis_time"`
+	Tlp                      string      `json:"tlp"`
+	Errors                   []string    `json:"errors"`
 }
 
+type Job struct {
+	BaseJob
+	AnalyzerReports  []Report               `json:"analyzer_reports"`
+	ConnectorReports []Report               `json:"connector_reports"`
+	Permission       map[string]interface{} `json:"permission"`
+}
+
+// * This is to represent the jobs which come as a list
 type JobList struct {
-	Count      int   `json:"count"`
-	TotalPages int   `json:"total_pages"`
-	Results    []Job `json:"results"`
+	BaseJob
+}
+
+type JobListResponse struct {
+	Count      int       `json:"count"`
+	TotalPages int       `json:"total_pages"`
+	Results    []JobList `json:"results"`
 }
 
 type JobService struct {
@@ -63,7 +72,7 @@ type JobService struct {
 * Desc: Get a list of all the jobs
 * Endpoint: GET /api/jobs
  */
-func (jobService *JobService) List(ctx context.Context) (*JobList, error) {
+func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error) {
 	requestUrl := fmt.Sprintf("%s/api/jobs", jobService.client.options.Url)
 	request, err := http.NewRequest("GET", requestUrl, nil)
 	if err != nil {
@@ -73,7 +82,7 @@ func (jobService *JobService) List(ctx context.Context) (*JobList, error) {
 	if err != nil {
 		return nil, err
 	}
-	jobList := JobList{}
+	jobList := JobListResponse{}
 	marashalError := json.Unmarshal(successResp.Data, &jobList)
 	if marashalError != nil {
 		return nil, marashalError
