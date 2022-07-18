@@ -2,9 +2,11 @@ package gointelowl
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -47,6 +49,67 @@ type IntelOwlClient struct {
 	TagService       *TagService
 	AnalyzerService  *AnalyzerService
 	ConnectorService *ConnectorService
+}
+
+// * enum for TLP attribute used in the IntelOwl API
+type TLP int
+
+//* making the values of TLP
+const (
+	WHITE TLP = iota + 1
+	GREEN
+	AMBER
+	RED
+)
+
+// * To easily access the TLP enum values
+var TLPVALUES = map[string]int{
+	"WHITE": 1,
+	"GREEN": 2,
+	"AMBER": 3,
+	"RED":   4,
+}
+
+// * Overriding the String method to get the string representation of the enum
+func (tlp TLP) String() string {
+	switch tlp {
+	case WHITE:
+		return "WHITE"
+	case GREEN:
+		return "GREEN"
+	case AMBER:
+		return "AMBER"
+	case RED:
+		return "RED"
+	}
+	return "WHITE"
+}
+
+// * To easily make the TLP enum
+func ParseTLP(s string) TLP {
+	s = strings.TrimSpace(s)
+	value, ok := TLPVALUES[s]
+	if !ok {
+		return TLP(0)
+	}
+	return TLP(value)
+}
+
+//* Implementing the MarshalJSON interface to make our custom Marshal for the enum
+func (tlp TLP) MarshalJSON() ([]byte, error) {
+	return json.Marshal(tlp.String())
+}
+
+//* Implementing the UnmarshalJSON interface to make our custom Unmarshal for the enum
+func (tlp *TLP) UnmarshalJSON(data []byte) (err error) {
+	var tlpString string
+	if err := json.Unmarshal(data, &tlpString); err != nil {
+		return err
+	}
+	if *tlp = ParseTLP(tlpString); err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) IntelOwlClient {

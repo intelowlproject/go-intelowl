@@ -10,7 +10,7 @@ import (
 
 type ConnectorConfig struct {
 	BaseConfigurationType
-	MaximumTlp string `json:"maximum_tlp"`
+	MaximumTlp TLP `json:"maximum_tlp"`
 }
 
 type ConnectorService struct {
