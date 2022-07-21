@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"sort"
 )
 
@@ -31,7 +30,9 @@ type AnalyzerService struct {
  */
 func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]AnalyzerConfig, error) {
 	requestUrl := fmt.Sprintf("%s/api/get_analyzer_configs", analyzerService.client.options.Url)
-	request, err := http.NewRequest("GET", requestUrl, nil)
+	contentType := "application/json"
+	method := "GET"
+	request, err := analyzerService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +67,9 @@ func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]Anal
  */
 func (analyzerService *AnalyzerService) HealthCheck(ctx context.Context, analyzerName string) (bool, error) {
 	requestUrl := fmt.Sprintf("%s/api/analyzer/%s/healthcheck", analyzerService.client.options.Url, analyzerName)
-	request, err := http.NewRequest("GET", requestUrl, nil)
+	contentType := "application/json"
+	method := "GET"
+	request, err := analyzerService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return false, err
 	}
