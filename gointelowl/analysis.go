@@ -5,11 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
-	"path/filepath"
 )
 
 type BasicAnalysisParams struct {
@@ -18,7 +15,7 @@ type BasicAnalysisParams struct {
 	RuntimeConfiguration map[string]interface{} `json:"runtime_configuration"`
 	AnalyzersRequested   []string               `json:"analyzers_requested"`
 	ConnectorsRequested  []string               `json:"connectors_requested"`
-	TagsLabels           []Tag                  `json:"tags_labels"`
+	TagsLabels           []string               `json:"tags_labels"`
 }
 
 type ObservableAnalysisParams struct {
@@ -56,12 +53,8 @@ func (client *IntelOwlClient) CreateObservableAnalysis(ctx context.Context, para
 
 	jsonData, _ := json.Marshal(params)
 
-	fmt.Println("JSON DATA")
-	fmt.Println(string(jsonData))
-
 	request, err := http.NewRequest("POST", requestUrl, bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Println("???")
 		return nil, err
 	}
 
@@ -82,12 +75,8 @@ func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Conte
 
 	jsonData, _ := json.Marshal(params)
 
-	fmt.Println("JSON DATA")
-	fmt.Println(string(jsonData))
-
 	request, err := http.NewRequest("POST", requestUrl, bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Println("???")
 		return nil, err
 	}
 
@@ -100,44 +89,4 @@ func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Conte
 		return nil, unmarshalError
 	}
 	return &multipleAnalysisResponse, nil
-}
-
-func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalysisParams *FileAnalysisParams) (*AnalysisResponse, error) {
-	requestUrl := fmt.Sprintf("%s/api/analyze_file", client.options.Url)
-	// * Making the multiform data
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	writer.WriteField("tlp", fileAnalysisParams.Tlp.String())
-	runTimeConfigurationJson, marshalError := json.Marshal(fileAnalysisParams.RuntimeConfiguration)
-	if marshalError != nil {
-		return nil, marshalError
-	}
-	runTimeConfigurationJsonString := string(runTimeConfigurationJson)
-	writer.WriteField("runtime_configuration", runTimeConfigurationJsonString)
-	for _, analyzer := range fileAnalysisParams.AnalyzersRequested {
-		writer.WriteField("analyzers_requested", analyzer)
-	}
-	for _, connector := range fileAnalysisParams.ConnectorsRequested {
-		writer.WriteField("connectors_requested", connector)
-	}
-	for _, tag := range fileAnalysisParams.TagsLabels {
-		writer.WriteField("tags_labels", tag.Label)
-	}
-	filePart, _ := writer.CreateFormFile("file", filepath.Base(fileAnalysisParams.File.Name()))
-	io.Copy(filePart, fileAnalysisParams.File)
-	writer.Close()
-	fmt.Println(body)
-	request, err := http.NewRequest("POST", requestUrl, body)
-	if err != nil {
-		return nil, err
-	}
-	analysisResponse := AnalysisResponse{}
-	successResp, err := client.newRequest(ctx, request)
-	if err != nil {
-		return nil, err
-	}
-	if unmarshalError := json.Unmarshal(successResp.Data, &analysisResponse); unmarshalError != nil {
-		return nil, unmarshalError
-	}
-	return &analysisResponse, nil
 }
