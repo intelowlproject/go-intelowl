@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"sort"
 )
 
@@ -17,9 +16,15 @@ type ConnectorService struct {
 	client *IntelOwlClient
 }
 
+/*
+* Desc: get the connector configurations of your intelowl instance
+* Endpoint: GET /api/get_connector_configs
+ */
 func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]ConnectorConfig, error) {
 	requestUrl := fmt.Sprintf("%s/api/get_connector_configs", connectorService.client.options.Url)
-	request, err := http.NewRequest("GET", requestUrl, nil)
+	contentType := "application/json"
+	method := "GET"
+	request, err := connectorService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -48,9 +53,15 @@ func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]Co
 	return &connectorConfigurationList, nil
 }
 
+/*
+* Desc: Checking if your connector is up and running!
+* Endpoint: GET /api/connector/{NameOfConnector}/healthcheck
+ */
 func (connectorService *ConnectorService) HealthCheck(ctx context.Context, connectorName string) (bool, error) {
 	requestUrl := fmt.Sprintf("%s/api/connector/%s/healthcheck", connectorService.client.options.Url, connectorName)
-	request, err := http.NewRequest("GET", requestUrl, nil)
+	contentType := "application/json"
+	method := "GET"
+	request, err := connectorService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return false, err
 	}

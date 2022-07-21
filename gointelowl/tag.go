@@ -39,7 +39,9 @@ func checkTagID(id uint64) error {
  */
 func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
 	requestUrl := fmt.Sprintf("%s/api/tags", tagService.client.options.Url)
-	request, err := http.NewRequest("GET", requestUrl, nil)
+	contentType := "application/json"
+	method := "GET"
+	request, err := tagService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +67,9 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 		return nil, err
 	}
 	requestUrl := fmt.Sprintf("%s/api/tags/%d", tagService.client.options.Url, tagId)
-	request, err := http.NewRequest("GET", requestUrl, nil)
+	contentType := "application/json"
+	method := "GET"
+	request, err := tagService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +95,10 @@ func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) 
 	if err != nil {
 		return nil, err
 	}
-	request, err := http.NewRequest("POST", requestUrl, bytes.NewBuffer(tagJson))
+	contentType := "application/json"
+	method := "POST"
+	body := bytes.NewBuffer(tagJson)
+	request, err := tagService.client.buildRequest(ctx, method, contentType, body, requestUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +125,10 @@ func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParam
 	if err != nil {
 		return nil, err
 	}
-	request, err := http.NewRequest("PUT", requestUrl, bytes.NewBuffer(tagJson))
+	contentType := "application/json"
+	method := "PUT"
+	body := bytes.NewBuffer(tagJson)
+	request, err := tagService.client.buildRequest(ctx, method, contentType, body, requestUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -144,9 +154,9 @@ func (tagService *TagService) Delete(ctx context.Context, tagId uint64) (bool, e
 		return false, err
 	}
 	requestUrl := fmt.Sprintf("%s/api/tags/%d", tagService.client.options.Url, tagId)
-	// printing the request
-	fmt.Println("Url: " + requestUrl)
-	request, err := http.NewRequest("DELETE", requestUrl, nil)
+	contentType := "application/json"
+	method := "DELETE"
+	request, err := tagService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return false, err
 	}
@@ -158,10 +168,4 @@ func (tagService *TagService) Delete(ctx context.Context, tagId uint64) (bool, e
 		return true, nil
 	}
 	return false, nil
-}
-
-//* Pretty printing the tag
-func (tag *Tag) Display() {
-	display := fmt.Sprintf("ID:%d\nLabel:%s\nColor:%s", tag.ID, tag.Label, tag.Color)
-	fmt.Println(display)
 }

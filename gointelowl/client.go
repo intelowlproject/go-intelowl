@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -44,10 +45,10 @@ type IntelOwlClientOptions struct {
 }
 
 type IntelOwlClient struct {
-	options    *IntelOwlClientOptions
-	client     *http.Client
-	TagService *TagService
-	JobService *JobService
+	options          *IntelOwlClientOptions
+	client           *http.Client
+	TagService       *TagService
+	JobService       *JobService
 	AnalyzerService  *AnalyzerService
 	ConnectorService *ConnectorService
 }
@@ -132,7 +133,7 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) 
 		client: &client,
 	}
 	client.JobService = &JobService{
-    client: &client,
+		client: &client,
 	}
 	client.AnalyzerService = &AnalyzerService{
 		client: &client,
@@ -143,14 +144,20 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) 
 	return client
 }
 
-func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Request) (*successResponse, error) {
-	request = request.WithContext(ctx)
-
-	request.Header.Set("Content-Type", "application/json")
+func (client *IntelOwlClient) buildRequest(ctx context.Context, method string, contentType string, body io.Reader, url string) (*http.Request, error) {
+	request, err := http.NewRequestWithContext(ctx, method, url, body)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Set("Content-Type", contentType)
 
 	tokenString := fmt.Sprintf("token %s", client.options.Token)
 
 	request.Header.Set("Authorization", tokenString)
+	return request, nil
+}
+
+func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Request) (*successResponse, error) {
 	response, err := client.client.Do(request)
 
 	// * Checking for context errors such as reaching the deadline and/or Timeout
