@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"os"
+	"path"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -17,7 +19,6 @@ func TestCreateObservableAnalysis(t *testing.T) {
 	if unmarshalError := json.Unmarshal([]byte(analysisJsonString), &analysisResponse); unmarshalError != nil {
 		t.Fatalf("Error: %s", unmarshalError)
 	}
-	testCases := make(map[string]TestData)
 	basicParams := gointelowl.BasicAnalysisParams{
 		User:                 1,
 		Tlp:                  gointelowl.WHITE,
@@ -26,6 +27,7 @@ func TestCreateObservableAnalysis(t *testing.T) {
 		ConnectorsRequested:  []string{},
 		TagsLabels:           []string{},
 	}
+	testCases := make(map[string]TestData)
 	testCases["simple"] = TestData{
 		Input: gointelowl.ObservableAnalysisParams{
 			BasicAnalysisParams:      basicParams,
@@ -110,6 +112,124 @@ func TestCreateMultipleObservableAnalysis(t *testing.T) {
 					}
 				} else {
 					diff := cmp.Diff(testCase.Want, gottenMultipleAnalysisResponse)
+					if diff != "" {
+						t.Fatalf(diff)
+					}
+				}
+			}
+		})
+	}
+
+}
+
+func TestCreateFileAnalysis(t *testing.T) {
+	analysisJsonString := `{"job_id":269,"status":"accepted","warnings":[],"analyzers_running":["File_Info"],"connectors_running":["YETI"]}`
+	analysisResponse := gointelowl.AnalysisResponse{}
+	if unmarshalError := json.Unmarshal([]byte(analysisJsonString), &analysisResponse); unmarshalError != nil {
+		t.Fatalf("Error: %s", unmarshalError)
+	}
+	fileName := "fileForAnalysis.txt"
+	fileDir := "./testFiles/"
+	filePath := path.Join(fileDir, fileName)
+	file, _ := os.Open(filePath)
+	defer file.Close()
+	basicAnalysisParams := gointelowl.BasicAnalysisParams{
+		User:                 1,
+		Tlp:                  gointelowl.WHITE,
+		RuntimeConfiguration: map[string]interface{}{},
+		AnalyzersRequested:   []string{"File_Info"},
+		ConnectorsRequested:  []string{},
+		TagsLabels:           []string{},
+	}
+	fileParams := &gointelowl.FileAnalysisParams{
+		BasicAnalysisParams: basicAnalysisParams,
+		File:                file,
+	}
+	testCases := make(map[string]TestData)
+	testCases["simple"] = TestData{
+		Input:      fileParams,
+		Data:       analysisJsonString,
+		StatusCode: http.StatusOK,
+		Want:       &analysisResponse,
+	}
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			testServer := NewTestServer(&testCase)
+			defer testServer.Close()
+			client := NewTestIntelOwlClient(testServer.URL)
+			ctx := context.Background()
+			fileAnalysisParams, ok := testCase.Input.(gointelowl.FileAnalysisParams)
+			if ok {
+				gottenFileAnalysisResponse, err := client.CreateFileAnalysis(ctx, &fileAnalysisParams)
+				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
+					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
+					if diff != "" {
+						t.Fatalf(diff)
+					}
+				} else {
+					diff := cmp.Diff(testCase.Want, gottenFileAnalysisResponse)
+					if diff != "" {
+						t.Fatalf(diff)
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestCreateMultipleFilesAnalysis(t *testing.T) {
+	multiAnalysisJsonString := `{"count":2,"results":[{"job_id":270,"status":"accepted","warnings":[],"analyzers_running":["File_Info"],"connectors_running":["YETI"]},{"job_id":271,"status":"accepted","warnings":[],"analyzers_running":["File_Info"],"connectors_running":["YETI"]}]}`
+	multiAnalysisResponse := gointelowl.MultipleAnalysisResponse{}
+	if unmarshalError := json.Unmarshal([]byte(multiAnalysisJsonString), &multiAnalysisResponse); unmarshalError != nil {
+		t.Fatalf("Error: %s", unmarshalError)
+	}
+	fileDir := "./testFiles/"
+	fileName := "fileForAnalysis.txt"
+	filePath := path.Join(fileDir, fileName)
+	file, _ := os.Open(filePath)
+	defer file.Close()
+	fileName2 := "fileForAnalysis.txt"
+	filePath2 := path.Join(fileDir, fileName2)
+	file2, _ := os.Open(filePath2)
+	defer file2.Close()
+	filesArray := make([]*os.File, 2)
+	filesArray[0] = file
+	filesArray[1] = file2
+	basicAnalysisParams := gointelowl.BasicAnalysisParams{
+		User:                 1,
+		Tlp:                  gointelowl.WHITE,
+		RuntimeConfiguration: map[string]interface{}{},
+		AnalyzersRequested:   []string{"File_Info"},
+		ConnectorsRequested:  []string{},
+		TagsLabels:           []string{},
+	}
+	multipleFileParams := &gointelowl.MultipleFileAnalysisParams{
+		BasicAnalysisParams: basicAnalysisParams,
+		Files:               filesArray,
+	}
+	testCases := make(map[string]TestData)
+	testCases["simple"] = TestData{
+		Input:      multipleFileParams,
+		Data:       multiAnalysisJsonString,
+		StatusCode: http.StatusOK,
+		Want:       multiAnalysisResponse,
+	}
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			testServer := NewTestServer(&testCase)
+			defer testServer.Close()
+			client := NewTestIntelOwlClient(testServer.URL)
+			ctx := context.Background()
+			multipleFilesAnalysisParams, ok := testCase.Input.(gointelowl.MultipleFileAnalysisParams)
+			if ok {
+				gottenMultipleFilesAnalysisResponse, err := client.CreateMultipleFileAnalysis(ctx, &multipleFilesAnalysisParams)
+				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
+					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
+					if diff != "" {
+						t.Fatalf(diff)
+					}
+				} else {
+					diff := cmp.Diff(testCase.Want, gottenMultipleFilesAnalysisResponse)
 					if diff != "" {
 						t.Fatalf(diff)
 					}
