@@ -122,34 +122,52 @@ func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalys
 	writer := multipart.NewWriter(body)
 
 	// * Adding the TLP field
-	writer.WriteField("tlp", fileAnalysisParams.Tlp.String())
-
+	writeTlpError := writer.WriteField("tlp", fileAnalysisParams.Tlp.String())
+	if writeTlpError != nil {
+		return nil, writeTlpError
+	}
 	// * Adding the runtimeconfiguration field
 	runTimeConfigurationJson, marshalError := json.Marshal(fileAnalysisParams.RuntimeConfiguration)
 	if marshalError != nil {
 		return nil, marshalError
 	}
 	runTimeConfigurationJsonString := string(runTimeConfigurationJson)
-	writer.WriteField("runtime_configuration", runTimeConfigurationJsonString)
+	writeRuntimeError := writer.WriteField("runtime_configuration", runTimeConfigurationJsonString)
+	if writeRuntimeError != nil {
+		return nil, writeRuntimeError
+	}
 
 	// * Adding the requested analyzers
 	for _, analyzer := range fileAnalysisParams.AnalyzersRequested {
-		writer.WriteField("analyzers_requested", analyzer)
+		writeAnalyzerError := writer.WriteField("analyzers_requested", analyzer)
+		if writeAnalyzerError != nil {
+			return nil, writeAnalyzerError
+		}
 	}
 
 	// * Adding the requested connectors
 	for _, connector := range fileAnalysisParams.ConnectorsRequested {
-		writer.WriteField("connectors_requested", connector)
+		writeConnectorError := writer.WriteField("connectors_requested", connector)
+		if writeConnectorError != nil {
+			return nil, writeConnectorError
+		}
 	}
 
 	// * Adding the tag labels
 	for _, tagLabel := range fileAnalysisParams.TagsLabels {
-		writer.WriteField("tags_labels", tagLabel)
+		writeTagLabelError := writer.WriteField("tags_labels", tagLabel)
+		if writeTagLabelError != nil {
+			return nil, writeTagLabelError
+		}
 	}
 
 	// * Adding the file!
 	filePart, _ := writer.CreateFormFile("file", filepath.Base(fileAnalysisParams.File.Name()))
-	io.Copy(filePart, fileAnalysisParams.File)
+	_, writeFileError := io.Copy(filePart, fileAnalysisParams.File)
+	if writeFileError != nil {
+		writer.Close()
+		return nil, writeFileError
+	}
 	writer.Close()
 
 	//* building the request!
@@ -181,35 +199,53 @@ func (client *IntelOwlClient) CreateMultipleFileAnalysis(ctx context.Context, fi
 	writer := multipart.NewWriter(body)
 
 	// * Adding the TLP field
-	writer.WriteField("tlp", fileAnalysisParams.Tlp.String())
-
+	writeTlpError := writer.WriteField("tlp", fileAnalysisParams.Tlp.String())
+	if writeTlpError != nil {
+		return nil, writeTlpError
+	}
 	// * Adding the runtimeconfiguration field
 	runTimeConfigurationJson, marshalError := json.Marshal(fileAnalysisParams.RuntimeConfiguration)
 	if marshalError != nil {
 		return nil, marshalError
 	}
 	runTimeConfigurationJsonString := string(runTimeConfigurationJson)
-	writer.WriteField("runtime_configuration", runTimeConfigurationJsonString)
+	writeRuntimeError := writer.WriteField("runtime_configuration", runTimeConfigurationJsonString)
+	if writeRuntimeError != nil {
+		return nil, writeRuntimeError
+	}
 
 	// * Adding the requested analyzers
 	for _, analyzer := range fileAnalysisParams.AnalyzersRequested {
-		writer.WriteField("analyzers_requested", analyzer)
+		writeAnalyzerError := writer.WriteField("analyzers_requested", analyzer)
+		if writeAnalyzerError != nil {
+			return nil, writeAnalyzerError
+		}
 	}
 
 	// * Adding the requested connectors
 	for _, connector := range fileAnalysisParams.ConnectorsRequested {
-		writer.WriteField("connectors_requested", connector)
+		writeConnectorError := writer.WriteField("connectors_requested", connector)
+		if writeConnectorError != nil {
+			return nil, writeConnectorError
+		}
 	}
 
 	// * Adding the tag labels
 	for _, tagLabel := range fileAnalysisParams.TagsLabels {
-		writer.WriteField("tags_labels", tagLabel)
+		writeTagLabelError := writer.WriteField("tags_labels", tagLabel)
+		if writeTagLabelError != nil {
+			return nil, writeTagLabelError
+		}
 	}
 
 	// * Adding the files!
 	for _, file := range fileAnalysisParams.Files {
 		filePart, _ := writer.CreateFormFile("files", filepath.Base(file.Name()))
-		io.Copy(filePart, file)
+		_, writeFileError := io.Copy(filePart, file)
+		if writeFileError != nil {
+			writer.Close()
+			return nil, writeFileError
+		}
 	}
 	writer.Close()
 
