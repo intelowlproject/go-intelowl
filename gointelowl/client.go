@@ -62,7 +62,11 @@ type IntelOwlClient struct {
 	JobService       *JobService
 	AnalyzerService  *AnalyzerService
 	ConnectorService *ConnectorService
+<<<<<<< HEAD
 	Logger           *IntelOwlLogger
+=======
+	UserService      *UserService
+>>>>>>> 91ca151 (Adding me endpoints with tests!)
 }
 
 // TLP represents an enum for the TLP attribute used in IntelOwl's REST API.
@@ -160,10 +164,16 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, 
 	client.ConnectorService = &ConnectorService{
 		client: &client,
 	}
+<<<<<<< HEAD
 
 	client.Logger = &IntelOwlLogger{}
 	client.Logger.Init(loggerParams)
 
+=======
+	client.UserService = &UserService{
+		client: &client,
+	}
+>>>>>>> 91ca151 (Adding me endpoints with tests!)
 	return client
 }
 
