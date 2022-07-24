@@ -51,6 +51,7 @@ type IntelOwlClient struct {
 	JobService       *JobService
 	AnalyzerService  *AnalyzerService
 	ConnectorService *ConnectorService
+	UserService      *UserService
 }
 
 // * enum for TLP attribute used in the IntelOwl API
@@ -139,6 +140,9 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) 
 		client: &client,
 	}
 	client.ConnectorService = &ConnectorService{
+		client: &client,
+	}
+	client.UserService = &UserService{
 		client: &client,
 	}
 	return client
