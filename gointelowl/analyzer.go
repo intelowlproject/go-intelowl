@@ -29,7 +29,7 @@ type AnalyzerService struct {
 * Endpoint: GET "/api/get_analyzer_configs"
  */
 func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]AnalyzerConfig, error) {
-	requestUrl := fmt.Sprintf("%s/api/get_analyzer_configs", analyzerService.client.options.Url)
+	requestUrl := fmt.Sprintf(ANALYZER_CONFIG_URL, analyzerService.client.options.Url)
 	contentType := "application/json"
 	method := "GET"
 	request, err := analyzerService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -66,7 +66,7 @@ func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]Anal
 * Endpoint: GET "/api/analyzer/{NameOfAnalyzer}/healthcheck"
  */
 func (analyzerService *AnalyzerService) HealthCheck(ctx context.Context, analyzerName string) (bool, error) {
-	requestUrl := fmt.Sprintf("%s/api/analyzer/%s/healthcheck", analyzerService.client.options.Url, analyzerName)
+	requestUrl := fmt.Sprintf(ANALYZER_HEALTHCHECK_URL, analyzerService.client.options.Url, analyzerName)
 	contentType := "application/json"
 	method := "GET"
 	request, err := analyzerService.client.buildRequest(ctx, method, contentType, nil, requestUrl)

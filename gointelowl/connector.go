@@ -21,7 +21,7 @@ type ConnectorService struct {
 * Endpoint: GET /api/get_connector_configs
  */
 func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]ConnectorConfig, error) {
-	requestUrl := fmt.Sprintf("%s/api/get_connector_configs", connectorService.client.options.Url)
+	requestUrl := fmt.Sprintf(CONNECTOR_CONFIG_URL, connectorService.client.options.Url)
 	contentType := "application/json"
 	method := "GET"
 	request, err := connectorService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -58,7 +58,7 @@ func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]Co
 * Endpoint: GET /api/connector/{NameOfConnector}/healthcheck
  */
 func (connectorService *ConnectorService) HealthCheck(ctx context.Context, connectorName string) (bool, error) {
-	requestUrl := fmt.Sprintf("%s/api/connector/%s/healthcheck", connectorService.client.options.Url, connectorName)
+	requestUrl := fmt.Sprintf(CONNECTOR_HEALTHCHECK_URL, connectorService.client.options.Url, connectorName)
 	contentType := "application/json"
 	method := "GET"
 	request, err := connectorService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
