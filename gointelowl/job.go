@@ -53,7 +53,7 @@ type Job struct {
 	Permission       map[string]interface{} `json:"permission"`
 }
 
-// * This is to represent the jobs which come as a list
+//This is to represent the jobs which come as a list
 type JobList struct {
 	BaseJob
 }
@@ -68,10 +68,8 @@ type JobService struct {
 	client *IntelOwlClient
 }
 
-/*
-* Desc: Get a list of all the jobs
-* Endpoint: GET /api/jobs
- */
+// Getting a list of all the jobs
+//	GET /api/jobs
 func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error) {
 	requestUrl := fmt.Sprintf("%s/api/jobs", jobService.client.options.Url)
 	contentType := "application/json"
@@ -93,10 +91,8 @@ func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error
 	return &jobList, nil
 }
 
-/*
-* Desc: Get a Job through its respective ID
-* Endpoint: GET /api/jobs/{jobID}
- */
+// Get a Job through its respective ID
+//	Endpoint: GET /api/jobs/{jobID}
 func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, error) {
 	requestUrl := fmt.Sprintf("%s/api/jobs/%d", jobService.client.options.Url, jobId)
 	contentType := "application/json"
@@ -117,10 +113,8 @@ func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, erro
 	return &jobResponse, nil
 }
 
-/*
-* Desc: Get the File Sample associated with a Job through its ID
-* Endpoint: GET /api/jobs/{jobID}/download_sample
- */
+//Get the File Sample associated with a Job through its ID
+//	GET /api/jobs/{jobID}/download_sample
 func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) ([]byte, error) {
 	requestUrl := fmt.Sprintf("%s/api/jobs/%d/download_sample", jobService.client.options.Url, jobId)
 	contentType := "application/json"
@@ -136,10 +130,8 @@ func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) 
 	return successResp.Data, nil
 }
 
-/*
-* Desc: Delete a Job through its ID
-* Endpoint: DELETE /api/jobs/{jobID}
- */
+//Delete a Job through its ID
+//	DELETE /api/jobs/{jobID}
 func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, error) {
 	requestUrl := fmt.Sprintf("%s/api/jobs/%d", jobService.client.options.Url, jobId)
 	contentType := "application/json"
@@ -158,10 +150,8 @@ func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, e
 	return false, nil
 }
 
-/*
-* Desc: Stop a running job through its ID
-* Endpoint: PATCH /api/jobs/{jobID}/kill
- */
+//Stop a running job through its ID
+//	PATCH /api/jobs/{jobID}/kill
 func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, error) {
 	requestUrl := fmt.Sprintf("%s/api/jobs/%d/kill", jobService.client.options.Url, jobId)
 	contentType := "application/json"
@@ -180,10 +170,8 @@ func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, err
 	return false, nil
 }
 
-/*
-* Desc: Stop a running analyzer on a job that is being processed through its ID and the analyzer's name
-* Endpoint: PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/kill
- */
+// Stop a running analyzer on a job that is being processed through its ID and the analyzer's name
+//	PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/kill
 func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
 	requestUrl := fmt.Sprintf("%s/api/jobs/%d/analyzer/%s/kill", jobService.client.options.Url, jobId, analyzerName)
 	contentType := "application/json"
@@ -202,10 +190,8 @@ func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, an
 	return false, nil
 }
 
-/*
-* Desc: Re-run a selected analyzer on a job that is being processed through its ID and the analyzer's name
-* Endpoint: PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/retry
- */
+//Re-run a selected analyzer on a job that is being processed through its ID and the analyzer's name
+//	PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/retry
 func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
 	requestUrl := fmt.Sprintf("%s/api/jobs/%d/analyzer/%s/retry", jobService.client.options.Url, jobId, analyzerName)
 	contentType := "application/json"
@@ -224,10 +210,8 @@ func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, a
 	return false, nil
 }
 
-/*
-* Desc: Stop a running connector on a job that is being processed through its ID and the connector's name
-* Endpoint: PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/kill
- */
+// Stopping a running connector on a job that is being processed through its ID and the connector's name
+//	PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/kill
 func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
 	requestUrl := fmt.Sprintf("%s/api/jobs/%d/connector/%s/kill", jobService.client.options.Url, jobId, connectorName)
 	contentType := "application/json"
@@ -246,10 +230,8 @@ func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, c
 	return false, nil
 }
 
-/*
-* Desc: Re-run a selected connector on a job that is being processed through its ID and the connector's name
-* Endpoint: PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/retry
- */
+//Re-run a selected connector on a job that is being processed through its ID and the connector's name
+//	PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/retry
 func (jobService *JobService) RetryConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
 	requestUrl := fmt.Sprintf("%s/api/jobs/%d/connector/%s/retry", jobService.client.options.Url, jobId, connectorName)
 	contentType := "application/json"

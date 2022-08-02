@@ -1,3 +1,7 @@
+// This packages provides a SDK to easily integrate intelowl with your own set of tools.
+//
+// gointelowl makes it easy to automate, configure, and use intelowl with your own set of tools
+// with its Idiomatic approach making an analysis is easy as just writing one line of code!
 package gointelowl
 
 import (
@@ -11,6 +15,7 @@ import (
 	"time"
 )
 
+// Error handler struct which gives you the status code, error message and the whole *http.Response
 type IntelOwlError struct {
 	StatusCode int
 	Message    string
@@ -36,6 +41,7 @@ type successResponse struct {
 	Data       []byte
 }
 
+// The optional paramater struct to configure and use intelowlclient
 type IntelOwlClientOptions struct {
 	Url   string
 	Token string
@@ -44,6 +50,7 @@ type IntelOwlClientOptions struct {
 	Timeout     time.Duration
 }
 
+// The Client from which you can connect to intelowlclient and use it to do some super cool stuff!
 type IntelOwlClient struct {
 	options          *IntelOwlClientOptions
 	client           *http.Client
@@ -53,10 +60,10 @@ type IntelOwlClient struct {
 	ConnectorService *ConnectorService
 }
 
-// * enum for TLP attribute used in the IntelOwl API
+// enum for TLP attribute used in the IntelOwl API
 type TLP int
 
-//* making the values of TLP
+// making the values of TLP
 const (
 	WHITE TLP = iota + 1
 	GREEN
@@ -64,7 +71,7 @@ const (
 	RED
 )
 
-// * To easily access the TLP enum values
+// To easily access the TLP enum values
 var TLPVALUES = map[string]int{
 	"WHITE": 1,
 	"GREEN": 2,
@@ -72,7 +79,7 @@ var TLPVALUES = map[string]int{
 	"RED":   4,
 }
 
-// * Overriding the String method to get the string representation of the enum
+// Overriding the String method to get the string representation of the enum
 func (tlp TLP) String() string {
 	switch tlp {
 	case WHITE:
@@ -87,7 +94,7 @@ func (tlp TLP) String() string {
 	return "WHITE"
 }
 
-// * To easily make the TLP enum
+// To easily make the TLP enum
 func ParseTLP(s string) TLP {
 	s = strings.TrimSpace(s)
 	value, ok := TLPVALUES[s]
@@ -97,12 +104,12 @@ func ParseTLP(s string) TLP {
 	return TLP(value)
 }
 
-//* Implementing the MarshalJSON interface to make our custom Marshal for the enum
+// Implementing the MarshalJSON interface to make our custom Marshal for the enum
 func (tlp TLP) MarshalJSON() ([]byte, error) {
 	return json.Marshal(tlp.String())
 }
 
-//* Implementing the UnmarshalJSON interface to make our custom Unmarshal for the enum
+// Implementing the UnmarshalJSON interface to make our custom Unmarshal for the enum
 func (tlp *TLP) UnmarshalJSON(data []byte) (err error) {
 	var tlpString string
 	if err := json.Unmarshal(data, &tlpString); err != nil {
@@ -114,6 +121,7 @@ func (tlp *TLP) UnmarshalJSON(data []byte) (err error) {
 	return nil
 }
 
+// This is used to easily make an IntelOwlClient
 func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) IntelOwlClient {
 
 	if options.Timeout == 0 {
