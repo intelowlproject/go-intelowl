@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 )
 
+// This serves as a basis for the analysis params of both Observable and File analysis
 type BasicAnalysisParams struct {
 	User                 int                    `json:"user"`
 	Tlp                  TLP                    `json:"tlp"`
@@ -20,28 +21,34 @@ type BasicAnalysisParams struct {
 	TagsLabels           []string               `json:"tags_labels"`
 }
 
+// Observable Analysis parameters struct to easily make an observable analysis!
 type ObservableAnalysisParams struct {
 	BasicAnalysisParams
 	ObservableName           string `json:"observable_name"`
 	ObservableClassification string `json:"classification"`
 }
 
+// Multiple Observable Analysis parameters struct to easily make an analysis for multiple observables
 type MultipleObservableAnalysisParams struct {
 	BasicAnalysisParams
 	Observables [][]string `json:"observables"`
 }
 
-//* This is gonna be passed to multiform data! so no JSON tags
+// File Analysis parameters struct to easily make an file analysis!
+// This is gonna be passed to multiform data! so no JSON tags
 type FileAnalysisParams struct {
 	BasicAnalysisParams
 	File *os.File
 }
 
+// Multiple File Analysis parameters struct to easily make an analysis for multiple files
+// This is gonna be passed to multiform data! so no JSON tags
 type MultipleFileAnalysisParams struct {
 	BasicAnalysisParams
 	Files []*os.File
 }
 
+// This is the response struct whenever you do single analysis of an observable or file!
 type AnalysisResponse struct {
 	JobID             int      `json:"job_id"`
 	Status            string   `json:"status"`
@@ -50,15 +57,14 @@ type AnalysisResponse struct {
 	ConnectorsRunning []string `json:"connectors_running"`
 }
 
+// This is the response struct whenever you do multiple analysises of observables or files!
 type MultipleAnalysisResponse struct {
 	Count   int                `json:"count"`
 	Results []AnalysisResponse `json:"results"`
 }
 
-/*
-* Desc: Create an analysis of an observable(IP, String, Hash)
-* Endpoint: POST /api/analyze_observable
- */
+// Desc: Create an analysis of an observable(IP, String, Hash)
+// Endpoint: POST /api/analyze_observable
 func (client *IntelOwlClient) CreateObservableAnalysis(ctx context.Context, params *ObservableAnalysisParams) (*AnalysisResponse, error) {
 	requestUrl := fmt.Sprintf(ANALYZE_OBSERVABLE_URL, client.options.Url)
 	method := "POST"
@@ -83,10 +89,8 @@ func (client *IntelOwlClient) CreateObservableAnalysis(ctx context.Context, para
 
 }
 
-/*
-* Desc: Create analysis of many observables
-* Endpoint: POST /api/analyze_multiple_observables
- */
+// Desc: Create analysis of many observables
+// Endpoint: POST /api/analyze_multiple_observables
 func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Context, params *MultipleObservableAnalysisParams) (*MultipleAnalysisResponse, error) {
 	requestUrl := fmt.Sprintf(ANALYZE_MULTIPLE_OBSERVABLES_URL, client.options.Url)
 
@@ -111,10 +115,8 @@ func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Conte
 	return &multipleAnalysisResponse, nil
 }
 
-/*
-* Desc: Create an analysis of a File (.txt, .jpeg, .csv)
-* Endpoint: POST /api/analyze_file
- */
+// Desc: Create an analysis of a File (.txt, .jpeg, .csv)
+// Endpoint: POST /api/analyze_file
 func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalysisParams *FileAnalysisParams) (*AnalysisResponse, error) {
 	requestUrl := fmt.Sprintf(ANALYZE_FILE_URL, client.options.Url)
 	// * Making the multiform data
@@ -188,10 +190,8 @@ func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalys
 	return &analysisResponse, nil
 }
 
-/*
-* Desc: Create an analysis of multiple Files (.txt, .jpeg, .csv)
-* Endpoint: POST /api/analyze_mutliple_files
- */
+// Desc: Create an analysis of multiple Files (.txt, .jpeg, .csv)
+// Endpoint: POST /api/analyze_mutliple_files
 func (client *IntelOwlClient) CreateMultipleFileAnalysis(ctx context.Context, fileAnalysisParams *MultipleFileAnalysisParams) (*MultipleAnalysisResponse, error) {
 	requestUrl := fmt.Sprintf(ANALYZE_MULTIPLE_FILES_URL, client.options.Url)
 	// * Making the multiform data
