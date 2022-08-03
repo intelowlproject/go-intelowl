@@ -1,4 +1,7 @@
 # go-intelowl
+[![GitHub issues](https://img.shields.io/github/issues/intelowlproject/go-intelowl?style=plastic)](https://github.com/intelowlproject/go-intelowl/issues)
+[![GitHub license](https://img.shields.io/github/license/intelowlproject/go-intelowl?style=plastic)](https://github.com/intelowlproject/go-intelowl/blob/main/LICENSE)
+
 ![go-banner](./Banner.png)
 go-intelowl is a client library/SDK that allows developers to easily automate and integrate [IntelOwl](https://github.com/intelowlproject/IntelOwl) with their own set of tools!
 
