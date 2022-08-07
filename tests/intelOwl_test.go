@@ -39,5 +39,9 @@ func NewTestIntelOwlClient(url string) gointelowl.IntelOwlClient {
 			Certificate: "",
 		},
 		nil,
+		&gointelowl.LoggerParams{
+			Flags: 0,
+			File:  nil,
+		},
 	)
 }
