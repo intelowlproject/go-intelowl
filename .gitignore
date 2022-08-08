@@ -16,4 +16,5 @@
 
 *.http
 main.go
+*.json
 .vscode

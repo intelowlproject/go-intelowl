@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/intelowlproject/go-intelowl/gointelowl"
+	"github.com/sirupsen/logrus"
 )
 
 // * Test Data Struct used for every struct obj
@@ -39,5 +40,10 @@ func NewTestIntelOwlClient(url string) gointelowl.IntelOwlClient {
 			Certificate: "",
 		},
 		nil,
+		&gointelowl.LoggerParams{
+			File:      nil,
+			Formatter: nil,
+			Level:     logrus.DebugLevel,
+		},
 	)
 }
