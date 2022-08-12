@@ -38,7 +38,7 @@ func checkTagID(id uint64) error {
 * Endpoint: GET "/api/tags"
  */
 func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
-	requestUrl := fmt.Sprintf("%s/api/tags", tagService.client.options.Url)
+	requestUrl := fmt.Sprintf(BASE_TAG_URL, tagService.client.options.Url)
 	contentType := "application/json"
 	method := "GET"
 	request, err := tagService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -66,7 +66,7 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 	if err := checkTagID(tagId); err != nil {
 		return nil, err
 	}
-	requestUrl := fmt.Sprintf("%s/api/tags/%d", tagService.client.options.Url, tagId)
+	requestUrl := fmt.Sprintf(SPECIFIC_TAG_URL, tagService.client.options.Url, tagId)
 	contentType := "application/json"
 	method := "GET"
 	request, err := tagService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -90,7 +90,7 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 * Endpoint: POST "/api/tags/"
  */
 func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) {
-	requestUrl := fmt.Sprintf("%s/api/tags", tagService.client.options.Url)
+	requestUrl := fmt.Sprintf(BASE_TAG_URL, tagService.client.options.Url)
 	tagJson, err := json.Marshal(tagParams)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) 
 * Endpoint: PUT "/api/tags/{id}"
  */
 func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParams *TagParams) (*Tag, error) {
-	requestUrl := fmt.Sprintf("%s/api/tags/%d", tagService.client.options.Url, tagId)
+	requestUrl := fmt.Sprintf(SPECIFIC_TAG_URL, tagService.client.options.Url, tagId)
 	// Getting the relevant JSON data
 	tagJson, err := json.Marshal(tagParams)
 	if err != nil {
@@ -153,7 +153,7 @@ func (tagService *TagService) Delete(ctx context.Context, tagId uint64) (bool, e
 	if err := checkTagID(tagId); err != nil {
 		return false, err
 	}
-	requestUrl := fmt.Sprintf("%s/api/tags/%d", tagService.client.options.Url, tagId)
+	requestUrl := fmt.Sprintf(SPECIFIC_TAG_URL, tagService.client.options.Url, tagId)
 	contentType := "application/json"
 	method := "DELETE"
 	request, err := tagService.client.buildRequest(ctx, method, contentType, nil, requestUrl)

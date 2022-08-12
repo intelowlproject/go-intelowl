@@ -73,7 +73,7 @@ type JobService struct {
 * Endpoint: GET /api/jobs
  */
 func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error) {
-	requestUrl := fmt.Sprintf("%s/api/jobs", jobService.client.options.Url)
+	requestUrl := fmt.Sprintf(BASE_JOB_URL, jobService.client.options.Url)
 	contentType := "application/json"
 	method := "GET"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -98,7 +98,7 @@ func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error
 * Endpoint: GET /api/jobs/{jobID}
  */
 func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, error) {
-	requestUrl := fmt.Sprintf("%s/api/jobs/%d", jobService.client.options.Url, jobId)
+	requestUrl := fmt.Sprintf(SPECIFIC_JOB_URL, jobService.client.options.Url, jobId)
 	contentType := "application/json"
 	method := "GET"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -122,7 +122,7 @@ func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, erro
 * Endpoint: GET /api/jobs/{jobID}/download_sample
  */
 func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) ([]byte, error) {
-	requestUrl := fmt.Sprintf("%s/api/jobs/%d/download_sample", jobService.client.options.Url, jobId)
+	requestUrl := fmt.Sprintf(DOWNLOAD_SAMPLE_JOB_URL, jobService.client.options.Url, jobId)
 	contentType := "application/json"
 	method := "GET"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -141,7 +141,7 @@ func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) 
 * Endpoint: DELETE /api/jobs/{jobID}
  */
 func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, error) {
-	requestUrl := fmt.Sprintf("%s/api/jobs/%d", jobService.client.options.Url, jobId)
+	requestUrl := fmt.Sprintf(SPECIFIC_JOB_URL, jobService.client.options.Url, jobId)
 	contentType := "application/json"
 	method := "DELETE"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -163,7 +163,7 @@ func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, e
 * Endpoint: PATCH /api/jobs/{jobID}/kill
  */
 func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, error) {
-	requestUrl := fmt.Sprintf("%s/api/jobs/%d/kill", jobService.client.options.Url, jobId)
+	requestUrl := fmt.Sprintf(KILL_JOB_URL, jobService.client.options.Url, jobId)
 	contentType := "application/json"
 	method := "PATCH"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -185,7 +185,7 @@ func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, err
 * Endpoint: PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/kill
  */
 func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
-	requestUrl := fmt.Sprintf("%s/api/jobs/%d/analyzer/%s/kill", jobService.client.options.Url, jobId, analyzerName)
+	requestUrl := fmt.Sprintf(KILL_ANALYZER_JOB_URL, jobService.client.options.Url, jobId, analyzerName)
 	contentType := "application/json"
 	method := "PATCH"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -207,7 +207,7 @@ func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, an
 * Endpoint: PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/retry
  */
 func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
-	requestUrl := fmt.Sprintf("%s/api/jobs/%d/analyzer/%s/retry", jobService.client.options.Url, jobId, analyzerName)
+	requestUrl := fmt.Sprintf(RETRY_ANALYZER_JOB_URL, jobService.client.options.Url, jobId, analyzerName)
 	contentType := "application/json"
 	method := "PATCH"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -229,7 +229,7 @@ func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, a
 * Endpoint: PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/kill
  */
 func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
-	requestUrl := fmt.Sprintf("%s/api/jobs/%d/connector/%s/kill", jobService.client.options.Url, jobId, connectorName)
+	requestUrl := fmt.Sprintf(KILL_CONNECTOR_JOB_URL, jobService.client.options.Url, jobId, connectorName)
 	contentType := "application/json"
 	method := "PATCH"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -251,7 +251,7 @@ func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, c
 * Endpoint: PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/retry
  */
 func (jobService *JobService) RetryConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
-	requestUrl := fmt.Sprintf("%s/api/jobs/%d/connector/%s/retry", jobService.client.options.Url, jobId, connectorName)
+	requestUrl := fmt.Sprintf(RETRY_CONNECTOR_JOB_URL, jobService.client.options.Url, jobId, connectorName)
 	contentType := "application/json"
 	method := "PATCH"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)

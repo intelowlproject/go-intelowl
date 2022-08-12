@@ -60,7 +60,7 @@ type MultipleAnalysisResponse struct {
 * Endpoint: POST /api/analyze_observable
  */
 func (client *IntelOwlClient) CreateObservableAnalysis(ctx context.Context, params *ObservableAnalysisParams) (*AnalysisResponse, error) {
-	requestUrl := fmt.Sprintf("%s/api/analyze_observable", client.options.Url)
+	requestUrl := fmt.Sprintf(ANALYZE_OBSERVABLE_URL, client.options.Url)
 	method := "POST"
 	contentType := "application/json"
 	jsonData, _ := json.Marshal(params)
@@ -88,7 +88,7 @@ func (client *IntelOwlClient) CreateObservableAnalysis(ctx context.Context, para
 * Endpoint: POST /api/analyze_multiple_observables
  */
 func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Context, params *MultipleObservableAnalysisParams) (*MultipleAnalysisResponse, error) {
-	requestUrl := fmt.Sprintf("%s/api/analyze_multiple_observables", client.options.Url)
+	requestUrl := fmt.Sprintf(ANALYZE_MULTIPLE_OBSERVABLES_URL, client.options.Url)
 
 	method := "POST"
 	contentType := "application/json"
@@ -116,7 +116,7 @@ func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Conte
 * Endpoint: POST /api/analyze_file
  */
 func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalysisParams *FileAnalysisParams) (*AnalysisResponse, error) {
-	requestUrl := fmt.Sprintf("%s/api/analyze_file", client.options.Url)
+	requestUrl := fmt.Sprintf(ANALYZE_FILE_URL, client.options.Url)
 	// * Making the multiform data
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -193,7 +193,7 @@ func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalys
 * Endpoint: POST /api/analyze_mutliple_files
  */
 func (client *IntelOwlClient) CreateMultipleFileAnalysis(ctx context.Context, fileAnalysisParams *MultipleFileAnalysisParams) (*MultipleAnalysisResponse, error) {
-	requestUrl := fmt.Sprintf("%s/api/analyze_multiple_files", client.options.Url)
+	requestUrl := fmt.Sprintf(ANALYZE_MULTIPLE_FILES_URL, client.options.Url)
 	// * Making the multiform data
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
