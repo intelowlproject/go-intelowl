@@ -56,7 +56,7 @@ type IntelOwlClient struct {
 // * enum for TLP attribute used in the IntelOwl API
 type TLP int
 
-//* making the values of TLP
+// * making the values of TLP
 const (
 	WHITE TLP = iota + 1
 	GREEN
@@ -97,12 +97,12 @@ func ParseTLP(s string) TLP {
 	return TLP(value)
 }
 
-//* Implementing the MarshalJSON interface to make our custom Marshal for the enum
+// * Implementing the MarshalJSON interface to make our custom Marshal for the enum
 func (tlp TLP) MarshalJSON() ([]byte, error) {
 	return json.Marshal(tlp.String())
 }
 
-//* Implementing the UnmarshalJSON interface to make our custom Unmarshal for the enum
+// * Implementing the UnmarshalJSON interface to make our custom Unmarshal for the enum
 func (tlp *TLP) UnmarshalJSON(data []byte) (err error) {
 	var tlpString string
 	if err := json.Unmarshal(data, &tlpString); err != nil {
@@ -172,28 +172,24 @@ func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Requ
 
 	defer response.Body.Close()
 
-	statusCode := response.StatusCode
-	if statusCode < http.StatusOK || statusCode >= http.StatusBadRequest {
-		msgBytes, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			errorMessage := fmt.Sprintf("Could not convert JSON response. Status code: %d", statusCode)
-			intelOwlError := newIntelOwlError(statusCode, errorMessage, response)
-			return nil, intelOwlError
-		}
-		errorMessage := string(msgBytes)
-		intelOwlError := newIntelOwlError(statusCode, errorMessage, response)
-		return nil, intelOwlError
-	}
-
 	msgBytes, err := ioutil.ReadAll(response.Body)
+	statusCode := response.StatusCode
 	if err != nil {
 		errorMessage := fmt.Sprintf("Could not convert JSON response. Status code: %d", statusCode)
 		intelOwlError := newIntelOwlError(statusCode, errorMessage, response)
 		return nil, intelOwlError
 	}
+
+	if statusCode < http.StatusOK || statusCode >= http.StatusBadRequest {
+		errorMessage := string(msgBytes)
+		intelOwlError := newIntelOwlError(statusCode, errorMessage, response)
+		return nil, intelOwlError
+	}
+
 	sucessResp := successResponse{
 		StatusCode: statusCode,
 		Data:       msgBytes,
 	}
+
 	return &sucessResp, nil
 }
