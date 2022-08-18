@@ -144,6 +144,23 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) 
 	return client
 }
 
+func NewIntelOwlClientThroughJson(filePath string, httpClient *http.Client) (*IntelOwlClient, error) {
+	jsonBytes, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		errorMessage := fmt.Sprintf("Could not read %s", filePath)
+		intelOwlError := newIntelOwlError(400, errorMessage, nil)
+		return nil, intelOwlError
+	}
+	intelOwlClientOptions := IntelOwlClientOptions{}
+	if unmarshalError := json.Unmarshal([]byte(jsonBytes), &intelOwlClientOptions); unmarshalError != nil {
+		return nil, unmarshalError
+	}
+
+	fmt.Println(intelOwlClientOptions)
+
+	return nil, nil
+}
+
 func (client *IntelOwlClient) buildRequest(ctx context.Context, method string, contentType string, body io.Reader, url string) (*http.Request, error) {
 	request, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
