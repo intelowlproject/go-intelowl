@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -37,11 +38,11 @@ type successResponse struct {
 }
 
 type IntelOwlClientOptions struct {
-	Url   string
-	Token string
+	Url   string `json:"url"`
+	Token string `json:"token"`
 	// * so basically your SSL cert: path to the cert file!
-	Certificate string
-	Timeout     time.Duration
+	Certificate string `json:"certificate"`
+	Timeout     uint64 `json:"timeout"`
 }
 
 type IntelOwlClient struct {
@@ -116,13 +117,17 @@ func (tlp *TLP) UnmarshalJSON(data []byte) (err error) {
 
 func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) IntelOwlClient {
 
+	var timeout time.Duration
+
 	if options.Timeout == 0 {
-		options.Timeout = time.Duration(10) * time.Second
+		timeout = time.Duration(10) * time.Second
+	} else {
+		timeout = time.Duration(options.Timeout) * time.Second
 	}
 
 	if httpClient == nil {
 		httpClient = &http.Client{
-			Timeout: options.Timeout,
+			Timeout: timeout,
 		}
 	}
 	client := IntelOwlClient{
@@ -144,21 +149,22 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) 
 	return client
 }
 
-func NewIntelOwlClientThroughJson(filePath string, httpClient *http.Client) (*IntelOwlClient, error) {
-	jsonBytes, err := ioutil.ReadFile(filePath)
+func NewIntelOwlClientThroughJsonFile(filePath string, httpClient *http.Client) (*IntelOwlClient, error) {
+	optionsBytes, err := os.ReadFile(filePath)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Could not read %s", filePath)
 		intelOwlError := newIntelOwlError(400, errorMessage, nil)
 		return nil, intelOwlError
 	}
-	intelOwlClientOptions := IntelOwlClientOptions{}
-	if unmarshalError := json.Unmarshal([]byte(jsonBytes), &intelOwlClientOptions); unmarshalError != nil {
+
+	intelOwlClientOptions := &IntelOwlClientOptions{}
+	if unmarshalError := json.Unmarshal(optionsBytes, &intelOwlClientOptions); unmarshalError != nil {
 		return nil, unmarshalError
 	}
 
-	fmt.Println(intelOwlClientOptions)
+	intelOwlClient := NewIntelOwlClient(intelOwlClientOptions, httpClient)
 
-	return nil, nil
+	return &intelOwlClient, nil
 }
 
 func (client *IntelOwlClient) buildRequest(ctx context.Context, method string, contentType string, body io.Reader, url string) (*http.Request, error) {
