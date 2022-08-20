@@ -40,9 +40,10 @@ type successResponse struct {
 type IntelOwlClientOptions struct {
 	Url   string `json:"url"`
 	Token string `json:"token"`
-	// * so basically your SSL cert: path to the cert file!
+	// so basically your SSL cert: path to the cert file!
 	Certificate string `json:"certificate"`
-	Timeout     uint64 `json:"timeout"`
+	// Timeout in seconds
+	Timeout uint64 `json:"timeout"`
 }
 
 type IntelOwlClient struct {
