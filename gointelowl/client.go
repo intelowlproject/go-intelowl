@@ -53,6 +53,7 @@ type IntelOwlClient struct {
 	JobService       *JobService
 	AnalyzerService  *AnalyzerService
 	ConnectorService *ConnectorService
+	Logger           *IntelOwlLogger
 }
 
 // * enum for TLP attribute used in the IntelOwl API
@@ -116,7 +117,7 @@ func (tlp *TLP) UnmarshalJSON(data []byte) (err error) {
 	return nil
 }
 
-func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) IntelOwlClient {
+func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, loggerParams *LoggerParams) IntelOwlClient {
 
 	var timeout time.Duration
 
@@ -147,6 +148,10 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client) 
 	client.ConnectorService = &ConnectorService{
 		client: &client,
 	}
+
+	client.Logger = &IntelOwlLogger{}
+	client.Logger.Init(loggerParams)
+
 	return client
 }
 
