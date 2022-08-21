@@ -7,18 +7,18 @@ import (
 	"sort"
 )
 
-// This represents the configuration JSON of each connector
+// This represents the configuration of each connector
 type ConnectorConfig struct {
 	BaseConfigurationType
 	MaximumTlp TLP `json:"maximum_tlp"`
 }
 
-// Service object to access the connector endpoints!
+// Service object to access connector endpoints!
 type ConnectorService struct {
 	client *IntelOwlClient
 }
 
-// Get the connector configurations of your intelowl instance
+// Desc: Get the list of connector configurations
 //
 //	Endpoint: GET /api/get_connector_configs
 func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]ConnectorConfig, error) {
@@ -54,7 +54,7 @@ func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]Co
 	return &connectorConfigurationList, nil
 }
 
-// Checking if your connector is up and running!
+// Desc: Checking if your connector is up and running!
 //
 //	Endpoint: GET /api/connector/{NameOfConnector}/healthcheck
 func (connectorService *ConnectorService) HealthCheck(ctx context.Context, connectorName string) (bool, error) {

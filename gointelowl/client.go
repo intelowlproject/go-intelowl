@@ -1,5 +1,5 @@
-// This packages provides a SDK to easily integrate intelowl with your own set of tools.
-//
+// This package provides an SDK to easily integrate intelowl with your own set of tools.
+
 // gointelowl makes it easy to automate, configure, and use intelowl with your own set of tools
 // with its Idiomatic approach making an analysis is easy as just writing one line of code!
 package gointelowl
@@ -42,7 +42,7 @@ type successResponse struct {
 	Data       []byte
 }
 
-// The optional paramater struct to configure and use intelowlclient
+// The optional paramater struct to configure and use the IntelOwlClient
 type IntelOwlClientOptions struct {
 	Url   string `json:"url"`
 	Token string `json:"token"`
@@ -52,7 +52,7 @@ type IntelOwlClientOptions struct {
 	Timeout uint64 `json:"timeout"`
 }
 
-// The Client from which you can connect to intelowlclient and use it to do some super cool stuff!
+// The Client from which you can connect to IntelOwl!
 type IntelOwlClient struct {
 	options          *IntelOwlClientOptions
 	client           *http.Client
@@ -163,6 +163,7 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, 
 	return client
 }
 
+// Used to make IntelOwlClient through a JSON file
 func NewIntelOwlClientThroughJsonFile(filePath string, httpClient *http.Client, loggerParams *LoggerParams) (*IntelOwlClient, error) {
 	optionsBytes, err := os.ReadFile(filePath)
 	if err != nil {

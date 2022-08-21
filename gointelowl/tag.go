@@ -22,7 +22,7 @@ type Tag struct {
 	Color string `json:"color"`
 }
 
-// Service Object to accesst the tag endpoints
+// Service Object to easily access the tag endpoints
 type TagService struct {
 	client *IntelOwlClient
 }
@@ -35,7 +35,7 @@ func checkTagID(id uint64) error {
 	return errors.New("Tag ID cannot be 0")
 }
 
-// Getting all tags
+// Desc: Getting the list of tags
 //
 //	Endpoint: GET "/api/tags"
 func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
@@ -59,7 +59,7 @@ func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
 	return &tagList, nil
 }
 
-// Getting a tag through it ID!
+// Desc: Get a tag through it ID!
 //
 //	Endpoint: GET "/api/tags/{id}"
 func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, error) {
@@ -85,7 +85,7 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 	return &tagResponse, nil
 }
 
-// Creating a Tag!
+// Desc: Create a Tag!
 //
 //	Endpoint: POST "/api/tags/"
 func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) {
@@ -113,7 +113,7 @@ func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) 
 	return &createdTag, nil
 }
 
-// Updating a tag through it ID!
+// Desc: Update a tag through it ID!
 //
 //	Endpoint: PUT "/api/tags/{id}"
 func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParams *TagParams) (*Tag, error) {
@@ -143,7 +143,7 @@ func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParam
 	return &updatedTag, nil
 }
 
-// Deleting a tag through it ID!
+// Desc: Delete a tag through it ID!
 //
 //	Endpoint: DELETE "/api/tags/{id}"
 func (tagService *TagService) Delete(ctx context.Context, tagId uint64) (bool, error) {

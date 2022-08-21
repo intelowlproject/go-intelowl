@@ -70,7 +70,7 @@ type JobService struct {
 	client *IntelOwlClient
 }
 
-// Getting a list of all the jobs
+// Desc: Getting the list of jobs
 //
 //	GET /api/jobs
 func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error) {
@@ -94,7 +94,7 @@ func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error
 	return &jobList, nil
 }
 
-// Get a Job through its respective ID
+// Desc: Get a Job through its respective ID
 //
 //	Endpoint: GET /api/jobs/{jobID}
 func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, error) {
@@ -117,7 +117,7 @@ func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, erro
 	return &jobResponse, nil
 }
 
-// Get the File Sample associated with a Job through its ID
+// Desc: Get the File Sample associated with a Job through its ID
 //
 //	GET /api/jobs/{jobID}/download_sample
 func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) ([]byte, error) {
@@ -135,7 +135,7 @@ func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) 
 	return successResp.Data, nil
 }
 
-// Delete a Job through its ID
+// Desc: Delete a Job through its ID
 //
 //	DELETE /api/jobs/{jobID}
 func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, error) {
@@ -156,7 +156,7 @@ func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, e
 	return false, nil
 }
 
-// Stop a running job through its ID
+// Desc: Stop/Kill a running job through its ID
 //
 //	PATCH /api/jobs/{jobID}/kill
 func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, error) {
@@ -177,7 +177,7 @@ func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, err
 	return false, nil
 }
 
-// Stop a running analyzer on a job that is being processed through its ID and the analyzer's name
+// Desc: Stop an analyzer from running on a processed job through its ID and analyzer name.
 //
 //	PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/kill
 func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
@@ -198,7 +198,7 @@ func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, an
 	return false, nil
 }
 
-// Re-run a selected analyzer on a job that is being processed through its ID and the analyzer's name
+// Desc: Re-run a selected analyzer on a processed job through its ID and the analyzer name.
 //
 //	PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/retry
 func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
@@ -219,7 +219,7 @@ func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, a
 	return false, nil
 }
 
-// Stopping a running connector on a job that is being processed through its ID and the connector's name
+// Desc: Stop a connector from running on a processed job through its ID and connector name.
 //
 //	PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/kill
 func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
@@ -240,7 +240,7 @@ func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, c
 	return false, nil
 }
 
-// Re-run a selected connector on a job that is being processed through its ID and the connector's name
+// Desc: Re-run a selected connector on a processed job through its ID and connector name
 //
 //	PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/retry
 func (jobService *JobService) RetryConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {

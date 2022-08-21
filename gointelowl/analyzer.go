@@ -7,7 +7,7 @@ import (
 	"sort"
 )
 
-// This represents the configuration JSON of each analyzer
+// This represents the configuration of each analyzer
 type AnalyzerConfig struct {
 	BaseConfigurationType
 	Type                  string   `json:"type"`
@@ -21,12 +21,12 @@ type AnalyzerConfig struct {
 	ObservableSupported   []string `json:"observable_supported"`
 }
 
-// Service object to access the analyzer endpoints!
+// Service object to access analyzer endpoints!
 type AnalyzerService struct {
 	client *IntelOwlClient
 }
 
-// Getting the Analyzer Configurations
+// Desc: Get the list of analyzer configurations
 //
 //	Endpoint: GET "/api/get_analyzer_configs"
 func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]AnalyzerConfig, error) {
@@ -62,7 +62,7 @@ func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]Anal
 	return &analyzerConfigurationList, nil
 }
 
-// Getting the Analyzer Configurations
+// Desc: Checking if an analyzer is running or not.
 //
 //	Endpoint: GET "/api/analyzer/{NameOfAnalyzer}/healthcheck"
 func (analyzerService *AnalyzerService) HealthCheck(ctx context.Context, analyzerName string) (bool, error) {
