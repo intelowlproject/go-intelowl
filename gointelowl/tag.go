@@ -9,18 +9,20 @@ import (
 	"net/http"
 )
 
+// Tag optional parameters to easily create and update a tag
 type TagParams struct {
 	Label string `json:"label"`
 	Color string `json:"color"`
 }
 
+// Tag model to easily marshal and unmarshal.
 type Tag struct {
 	ID    uint64 `json:"id"`
 	Label string `json:"label"`
 	Color string `json:"color"`
 }
 
-// * Service Object!
+// Service Object to accesst the tag endpoints
 type TagService struct {
 	client *IntelOwlClient
 }
@@ -33,10 +35,9 @@ func checkTagID(id uint64) error {
 	return errors.New("Tag ID cannot be 0")
 }
 
-/*
-* Desc: Getting all tags
-* Endpoint: GET "/api/tags"
- */
+// Getting all tags
+//
+//	Endpoint: GET "/api/tags"
 func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
 	requestUrl := fmt.Sprintf(BASE_TAG_URL, tagService.client.options.Url)
 	contentType := "application/json"
@@ -58,10 +59,9 @@ func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
 	return &tagList, nil
 }
 
-/*
-* Desc: Getting a tag through it ID!
-* Endpoint: GET "/api/tags/{id}"
- */
+// Getting a tag through it ID!
+//
+//	Endpoint: GET "/api/tags/{id}"
 func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, error) {
 	if err := checkTagID(tagId); err != nil {
 		return nil, err
@@ -85,10 +85,9 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 	return &tagResponse, nil
 }
 
-/*
-* Desc: Creating a Tag!
-* Endpoint: POST "/api/tags/"
- */
+// Creating a Tag!
+//
+//	Endpoint: POST "/api/tags/"
 func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) {
 	requestUrl := fmt.Sprintf(BASE_TAG_URL, tagService.client.options.Url)
 	tagJson, err := json.Marshal(tagParams)
@@ -114,10 +113,9 @@ func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) 
 	return &createdTag, nil
 }
 
-/*
-* Desc: Updating a tag through it ID!
-* Endpoint: PUT "/api/tags/{id}"
- */
+// Updating a tag through it ID!
+//
+//	Endpoint: PUT "/api/tags/{id}"
 func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParams *TagParams) (*Tag, error) {
 	requestUrl := fmt.Sprintf(SPECIFIC_TAG_URL, tagService.client.options.Url, tagId)
 	// Getting the relevant JSON data
@@ -145,10 +143,9 @@ func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParam
 	return &updatedTag, nil
 }
 
-/*
-* Desc: Deleting a tag through it ID!
-* Endpoint: DELETE "/api/tags/{id}"
- */
+// Deleting a tag through it ID!
+//
+//	Endpoint: DELETE "/api/tags/{id}"
 func (tagService *TagService) Delete(ctx context.Context, tagId uint64) (bool, error) {
 	if err := checkTagID(tagId); err != nil {
 		return false, err
