@@ -47,6 +47,7 @@ type BaseJob struct {
 }
 
 // This is to represent a job
+// This is to represent a job
 type Job struct {
 	BaseJob
 	AnalyzerReports  []Report               `json:"analyzer_reports"`
@@ -65,6 +66,7 @@ type JobListResponse struct {
 	Results    []JobList `json:"results"`
 }
 
+// Service object to access the Job endpoints!
 // Service object to access the Job endpoints!
 type JobService struct {
 	client *IntelOwlClient

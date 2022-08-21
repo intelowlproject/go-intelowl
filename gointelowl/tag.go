@@ -10,11 +10,13 @@ import (
 )
 
 // Tag optional parameters to easily create and update a tag
+// Tag optional parameters to easily create and update a tag
 type TagParams struct {
 	Label string `json:"label"`
 	Color string `json:"color"`
 }
 
+// Tag model to easily marshal and unmarshal.
 // Tag model to easily marshal and unmarshal.
 type Tag struct {
 	ID    uint64 `json:"id"`

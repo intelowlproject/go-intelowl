@@ -17,6 +17,7 @@ import (
 )
 
 // Error handler struct which gives you the status code, error message and the whole *http.Response
+// Error handler struct which gives you the status code, error message and the whole *http.Response
 type IntelOwlError struct {
 	StatusCode int
 	Message    string
