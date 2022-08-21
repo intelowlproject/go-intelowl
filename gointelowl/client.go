@@ -155,7 +155,7 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, 
 	return client
 }
 
-func NewIntelOwlClientThroughJsonFile(filePath string, httpClient *http.Client) (*IntelOwlClient, error) {
+func NewIntelOwlClientThroughJsonFile(filePath string, httpClient *http.Client, loggerParams *LoggerParams) (*IntelOwlClient, error) {
 	optionsBytes, err := os.ReadFile(filePath)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Could not read %s", filePath)
@@ -168,7 +168,7 @@ func NewIntelOwlClientThroughJsonFile(filePath string, httpClient *http.Client) 
 		return nil, unmarshalError
 	}
 
-	intelOwlClient := NewIntelOwlClient(intelOwlClientOptions, httpClient)
+	intelOwlClient := NewIntelOwlClient(intelOwlClientOptions, httpClient, loggerParams)
 
 	return &intelOwlClient, nil
 }

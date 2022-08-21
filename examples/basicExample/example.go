@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/intelowlproject/go-intelowl/gointelowl"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -17,10 +18,17 @@ func main() {
 		Certificate: "",
 	}
 
+	loggerParams := &gointelowl.LoggerParams{
+		File:      nil,
+		Formatter: &logrus.JSONFormatter{},
+		Level:     logrus.DebugLevel,
+	}
+
 	// Making the client!
 	client := gointelowl.NewIntelOwlClient(
 		&clientOptions,
 		nil,
+		loggerParams,
 	)
 
 	ctx := context.Background()

@@ -6,12 +6,14 @@ import (
 	"fmt"
 
 	"github.com/intelowlproject/go-intelowl/gointelowl"
+	"github.com/sirupsen/logrus"
 )
 
 /*
 For this example I'll be using the tag params!
 */
 func main() {
+
 	// Configuring the IntelOwlClient!
 	clientOptions := gointelowl.IntelOwlClientOptions{
 		Url:         "PUT-YOUR-INTELOWL-INSTANCE-URL-HERE",
@@ -19,10 +21,17 @@ func main() {
 		Certificate: "",
 	}
 
+	loggerParams := &gointelowl.LoggerParams{
+		File:      nil,
+		Formatter: &logrus.JSONFormatter{},
+		Level:     logrus.DebugLevel,
+	}
+
 	// Making the client!
 	client := gointelowl.NewIntelOwlClient(
 		&clientOptions,
 		nil,
+		loggerParams,
 	)
 
 	ctx := context.Background()
