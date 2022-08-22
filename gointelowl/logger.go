@@ -7,16 +7,21 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// LoggerParams represents the parameters to configure your logger.
 type LoggerParams struct {
 	File      io.Writer
 	Formatter logrus.Formatter
 	Level     logrus.Level
 }
 
+// IntelOwlLogger implements the Logrus logger.
+//
+// Logrus docs: https://github.com/sirupsen/logrus
 type IntelOwlLogger struct {
 	Logger *logrus.Logger
 }
 
+// Init initializes the IntelOwlLogger via LoggerParams
 func (intelOwlLogger *IntelOwlLogger) Init(loggerParams *LoggerParams) {
 	logger := logrus.New()
 

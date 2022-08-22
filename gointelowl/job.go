@@ -8,10 +8,12 @@ import (
 	"time"
 )
 
+// UserDetails represents user details in an IntelOwl job.
 type UserDetails struct {
 	Username string `json:"username"`
 }
 
+// Report represents a resport generate by an IntelOwl job.
 type Report struct {
 	Name                 string                 `json:"name"`
 	Status               string                 `json:"status"`
@@ -24,6 +26,7 @@ type Report struct {
 	Type                 string                 `json:"type"`
 }
 
+// BaseJob respresents all the common attributes in a Job and JobList structure.
 type BaseJob struct {
 	ID                       int         `json:"id"`
 	User                     UserDetails `json:"user"`
@@ -46,8 +49,7 @@ type BaseJob struct {
 	Errors                   []string    `json:"errors"`
 }
 
-// This is to represent a job
-// This is to represent a job
+// Job represents a job that is being processed in IntelOwl.
 type Job struct {
 	BaseJob
 	AnalyzerReports  []Report               `json:"analyzer_reports"`
@@ -55,7 +57,7 @@ type Job struct {
 	Permission       map[string]interface{} `json:"permission"`
 }
 
-// This is to represent the jobs which come as a list
+// JobList represents a list of jobs in IntelOwl.
 type JobList struct {
 	BaseJob
 }
@@ -66,15 +68,18 @@ type JobListResponse struct {
 	Results    []JobList `json:"results"`
 }
 
-// Service object to access the Job endpoints!
-// Service object to access the Job endpoints!
+// JobService handles communication with job related methods of IntelOwl API.
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs
 type JobService struct {
 	client *IntelOwlClient
 }
 
-// Desc: Getting the list of jobs
+// List fetches all the jobs in your IntelOwl instance.
 //
-//	GET /api/jobs
+//	Endpoint: GET /api/jobs
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_list
 func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error) {
 	requestUrl := fmt.Sprintf(BASE_JOB_URL, jobService.client.options.Url)
 	contentType := "application/json"
@@ -96,9 +101,11 @@ func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error
 	return &jobList, nil
 }
 
-// Desc: Get a Job through its respective ID
+// Get fetches a specific job through its job ID.
 //
 //	Endpoint: GET /api/jobs/{jobID}
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_retrieve
 func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, error) {
 	requestUrl := fmt.Sprintf(SPECIFIC_JOB_URL, jobService.client.options.Url, jobId)
 	contentType := "application/json"
@@ -119,9 +126,11 @@ func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, erro
 	return &jobResponse, nil
 }
 
-// Desc: Get the File Sample associated with a Job through its ID
+// DownloadSample fetches the File sample with the given job through its job ID.
 //
-//	GET /api/jobs/{jobID}/download_sample
+//	Endpoint: GET /api/jobs/{jobID}/download_sample
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_download_sample_retrieve
 func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) ([]byte, error) {
 	requestUrl := fmt.Sprintf(DOWNLOAD_SAMPLE_JOB_URL, jobService.client.options.Url, jobId)
 	contentType := "application/json"
@@ -137,9 +146,11 @@ func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) 
 	return successResp.Data, nil
 }
 
-// Desc: Delete a Job through its ID
+// Delete removes the given job from your IntelOwl instance.
 //
-//	DELETE /api/jobs/{jobID}
+//	Endpoint: DELETE /api/jobs/{jobID}
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_destroy
 func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, error) {
 	requestUrl := fmt.Sprintf(SPECIFIC_JOB_URL, jobService.client.options.Url, jobId)
 	contentType := "application/json"
@@ -158,9 +169,11 @@ func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, e
 	return false, nil
 }
 
-// Desc: Stop/Kill a running job through its ID
+// Kill lets you stop a running job through its ID
 //
-//	PATCH /api/jobs/{jobID}/kill
+//	Endpoint: PATCH /api/jobs/{jobID}/kill
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_kill_partial_update
 func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, error) {
 	requestUrl := fmt.Sprintf(KILL_JOB_URL, jobService.client.options.Url, jobId)
 	contentType := "application/json"
@@ -179,9 +192,11 @@ func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, err
 	return false, nil
 }
 
-// Desc: Stop an analyzer from running on a processed job through its ID and analyzer name.
+// KillAnalyzer lets you stop an analyzer from running on a processed job through its ID and analyzer name.
 //
-//	PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/kill
+//	Endpoint: PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/kill
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_analyzer_kill_partial_update
 func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
 	requestUrl := fmt.Sprintf(KILL_ANALYZER_JOB_URL, jobService.client.options.Url, jobId, analyzerName)
 	contentType := "application/json"
@@ -200,9 +215,11 @@ func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, an
 	return false, nil
 }
 
-// Desc: Re-run a selected analyzer on a processed job through its ID and the analyzer name.
+// RetryAnalyzer lets you re-run a selected analyzer on a processed job through its ID and the analyzer name.
 //
-//	PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/retry
+//	Endpoint: PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/retry
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_analyzer_retry_partial_update
 func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
 	requestUrl := fmt.Sprintf(RETRY_ANALYZER_JOB_URL, jobService.client.options.Url, jobId, analyzerName)
 	contentType := "application/json"
@@ -221,9 +238,11 @@ func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, a
 	return false, nil
 }
 
-// Desc: Stop a connector from running on a processed job through its ID and connector name.
+// KillConnector lets you stop a connector from running on a processed job through its ID and connector name.
 //
-//	PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/kill
+//	Endpoint: PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/kill
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_connector_kill_partial_update
 func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
 	requestUrl := fmt.Sprintf(KILL_CONNECTOR_JOB_URL, jobService.client.options.Url, jobId, connectorName)
 	contentType := "application/json"
@@ -242,9 +261,11 @@ func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, c
 	return false, nil
 }
 
-// Desc: Re-run a selected connector on a processed job through its ID and connector name
+// RetryConnector lets you re-run a selected connector on a processed job through its ID and connector name
 //
-//	PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/retry
+//	Endpoint: PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/retry
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_connector_retry_partial_update
 func (jobService *JobService) RetryConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
 	requestUrl := fmt.Sprintf(RETRY_CONNECTOR_JOB_URL, jobService.client.options.Url, jobId, connectorName)
 	contentType := "application/json"
