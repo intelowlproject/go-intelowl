@@ -7,7 +7,9 @@ import (
 	"sort"
 )
 
-// This represents the configuration of each analyzer
+// AnalyzerConfig represents how an analyzer is configured in IntelOwl.
+//
+// IntelOwl docs: https://intelowl.readthedocs.io/en/latest/Usage.html#analyzers-customization
 type AnalyzerConfig struct {
 	BaseConfigurationType
 	Type                  string   `json:"type"`
@@ -21,14 +23,18 @@ type AnalyzerConfig struct {
 	ObservableSupported   []string `json:"observable_supported"`
 }
 
-// Service object to access analyzer endpoints!
+// AnalyzerService handles communication with analyzer related methods of the IntelOwl API.
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyzer
 type AnalyzerService struct {
 	client *IntelOwlClient
 }
 
-// Desc: Get the list of analyzer configurations
+// GetConfigs lists down every analyzer configuration in your IntelOwl instance.
 //
-//	Endpoint: GET "/api/get_analyzer_configs"
+//	Endpoint: GET /api/get_analyzer_configs
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/get_analyzer_configs
 func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]AnalyzerConfig, error) {
 	requestUrl := fmt.Sprintf(ANALYZER_CONFIG_URL, analyzerService.client.options.Url)
 	contentType := "application/json"
@@ -62,9 +68,11 @@ func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]Anal
 	return &analyzerConfigurationList, nil
 }
 
-// Desc: Checking if an analyzer is running or not.
+// HealthCheck checks if the specified analyzer is up and running
 //
-//	Endpoint: GET "/api/analyzer/{NameOfAnalyzer}/healthcheck"
+//	Endpoint: GET /api/analyzer/{NameOfAnalyzer}/healthcheck
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyzer/operation/analyzer_healthcheck_retrieve
 func (analyzerService *AnalyzerService) HealthCheck(ctx context.Context, analyzerName string) (bool, error) {
 	requestUrl := fmt.Sprintf(ANALYZER_HEALTHCHECK_URL, analyzerService.client.options.Url, analyzerName)
 	contentType := "application/json"

@@ -23,6 +23,7 @@ type VerificationType struct {
 	MissingSecrets []string `json:"missing_secrets"`
 }
 
+// BaseConfigurationType represents the common fields in an analyzer and a connector configuration.
 type BaseConfigurationType struct {
 	Name         string               `json:"name"`
 	PythonModule string               `json:"python_module"`
@@ -34,6 +35,7 @@ type BaseConfigurationType struct {
 	Verification VerificationType     `json:"verification"`
 }
 
+// StatusResponse represents the status of an analyzer or connector i.e are they working or not.
 type StatusResponse struct {
 	Status bool `json:"status"`
 }

@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 )
 
-// This serves as the basis for the analysis parameters: Observable and File analysis.
+// BasicAnalysisParams represents the common fields in an Observable and a File analysis
 type BasicAnalysisParams struct {
 	User                 int                    `json:"user"`
 	Tlp                  TLP                    `json:"tlp"`
@@ -21,34 +21,32 @@ type BasicAnalysisParams struct {
 	TagsLabels           []string               `json:"tags_labels"`
 }
 
-// Observable analysis parameters struct to easily make an observable analysis!
+// ObservableAnalysisParams represents the fields needed to make an observable analysis.
 type ObservableAnalysisParams struct {
 	BasicAnalysisParams
 	ObservableName           string `json:"observable_name"`
 	ObservableClassification string `json:"classification"`
 }
 
-// Multiple observable analysis parameters struct to easily analyze multiple observables
+// MultipleObservableAnalysisParams represents the fields needed to analyze multiple observables.
 type MultipleObservableAnalysisParams struct {
 	BasicAnalysisParams
 	Observables [][]string `json:"observables"`
 }
 
-// File Analysis parameters struct to easily make an file analysis!
-// This is gonna be passed to multiform data! so no JSON tags
+// FileAnalysisParams represents the fields needed to analyze a file.
 type FileAnalysisParams struct {
 	BasicAnalysisParams
 	File *os.File
 }
 
-// Multiple File Analysis parameters struct to easily analyze multiple files
-// This is gonna be passed to multiform data! so no JSON tags
+// MultipleFileAnalysisParams represents the fields needed to analyze multiple files.
 type MultipleFileAnalysisParams struct {
 	BasicAnalysisParams
 	Files []*os.File
 }
 
-// The response struct for making an analysis!
+// AnalysisResponse represent a response returned by the API when you analyze an observable or file.
 type AnalysisResponse struct {
 	JobID             int      `json:"job_id"`
 	Status            string   `json:"status"`
@@ -57,15 +55,17 @@ type AnalysisResponse struct {
 	ConnectorsRunning []string `json:"connectors_running"`
 }
 
-// The response struct when you analyze multiple observables or files
+// MultipleAnalysisResponse represent a response returned by the API when you analyze multiple observables or files.
 type MultipleAnalysisResponse struct {
 	Count   int                `json:"count"`
 	Results []AnalysisResponse `json:"results"`
 }
 
-// Desc: Analyze an observable(IP, String, Hash)
+// CreateObservableAnalysis lets you analyze an observable.
 //
 //	Endpoint: POST /api/analyze_observable
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_observable
 func (client *IntelOwlClient) CreateObservableAnalysis(ctx context.Context, params *ObservableAnalysisParams) (*AnalysisResponse, error) {
 	requestUrl := fmt.Sprintf(ANALYZE_OBSERVABLE_URL, client.options.Url)
 	method := "POST"
@@ -90,9 +90,11 @@ func (client *IntelOwlClient) CreateObservableAnalysis(ctx context.Context, para
 
 }
 
-// Desc: Analyze multiple observables
+// CreateMultipleObservableAnalysis lets you analyze multiple observables.
 //
 //	Endpoint: POST /api/analyze_multiple_observables
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_multiple_observables
 func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Context, params *MultipleObservableAnalysisParams) (*MultipleAnalysisResponse, error) {
 	requestUrl := fmt.Sprintf(ANALYZE_MULTIPLE_OBSERVABLES_URL, client.options.Url)
 
@@ -117,9 +119,11 @@ func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Conte
 	return &multipleAnalysisResponse, nil
 }
 
-// Desc: Analyze a File (.txt, .jpeg, .csv)
+// CreateFileAnalysis lets you analyze a file.
 //
 //	Endpoint: POST /api/analyze_file
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_file
 func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalysisParams *FileAnalysisParams) (*AnalysisResponse, error) {
 	requestUrl := fmt.Sprintf(ANALYZE_FILE_URL, client.options.Url)
 	// * Making the multiform data
@@ -193,9 +197,11 @@ func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalys
 	return &analysisResponse, nil
 }
 
-// Desc: Analyze multiple files (.txt, .jpeg, .csv)
+// CreateMultipleFileAnalysis lets you analyze multiple files.
 //
 //	Endpoint: POST /api/analyze_mutliple_files
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_multiple_files
 func (client *IntelOwlClient) CreateMultipleFileAnalysis(ctx context.Context, fileAnalysisParams *MultipleFileAnalysisParams) (*MultipleAnalysisResponse, error) {
 	requestUrl := fmt.Sprintf(ANALYZE_MULTIPLE_FILES_URL, client.options.Url)
 	// * Making the multiform data
