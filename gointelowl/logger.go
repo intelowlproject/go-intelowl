@@ -14,6 +14,7 @@ type LoggerParams struct {
 	Level     logrus.Level
 }
 
+// IntelOwlLogger represents a logger to be used by the developer.
 // IntelOwlLogger implements the Logrus logger.
 //
 // Logrus docs: https://github.com/sirupsen/logrus
