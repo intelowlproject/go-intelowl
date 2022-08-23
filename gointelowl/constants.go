@@ -1,12 +1,12 @@
 package gointelowl
 
-//Tag endpoints URL
+// These represent tag endpoints URL
 const (
 	BASE_TAG_URL     = "%s/api/tags"
 	SPECIFIC_TAG_URL = BASE_TAG_URL + "/%d"
 )
 
-// Job endpoints URL
+// These represent job endpoints URL
 const (
 	BASE_JOB_URL            = "%s/api/jobs"
 	SPECIFIC_JOB_URL        = BASE_JOB_URL + "/%d"
@@ -18,19 +18,19 @@ const (
 	RETRY_CONNECTOR_JOB_URL = SPECIFIC_JOB_URL + "/connector/%s/retry"
 )
 
-// Analyzer endpoints URL
+// These represent analyzer endpoints URL
 const (
 	ANALYZER_CONFIG_URL      = "%s/api/get_analyzer_configs"
 	ANALYZER_HEALTHCHECK_URL = "%s/api/analyzer/%s/healthcheck"
 )
 
-// Connector endpoints URL
+// These represent connector endpoints URL
 const (
 	CONNECTOR_CONFIG_URL      = "%s/api/get_connector_configs"
 	CONNECTOR_HEALTHCHECK_URL = "%s/api/connector/%s/healthcheck"
 )
 
-// Analysis endpoints URL
+// These represent analyze endpoints URL
 const (
 	ANALYZE_OBSERVABLE_URL           = "%s/api/analyze_observable"
 	ANALYZE_MULTIPLE_OBSERVABLES_URL = "%s/api/analyze_multiple_observables"

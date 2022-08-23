@@ -7,6 +7,9 @@ import (
 	"sort"
 )
 
+// AnalyzerConfig represents how an analyzer is configured in IntelOwl.
+//
+// IntelOwl docs: https://intelowl.readthedocs.io/en/latest/Usage.html#analyzers-customization
 type AnalyzerConfig struct {
 	BaseConfigurationType
 	Type                  string   `json:"type"`
@@ -20,14 +23,18 @@ type AnalyzerConfig struct {
 	ObservableSupported   []string `json:"observable_supported"`
 }
 
+// AnalyzerService handles communication with analyzer related methods of the IntelOwl API.
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyzer
 type AnalyzerService struct {
 	client *IntelOwlClient
 }
 
-/*
-* Desc: Getting the Analyzer Configurations
-* Endpoint: GET "/api/get_analyzer_configs"
- */
+// GetConfigs lists down every analyzer configuration in your IntelOwl instance.
+//
+//	Endpoint: GET /api/get_analyzer_configs
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/get_analyzer_configs
 func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]AnalyzerConfig, error) {
 	requestUrl := fmt.Sprintf(ANALYZER_CONFIG_URL, analyzerService.client.options.Url)
 	contentType := "application/json"
@@ -61,10 +68,11 @@ func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]Anal
 	return &analyzerConfigurationList, nil
 }
 
-/*
-* Desc: Getting the Analyzer Configurations
-* Endpoint: GET "/api/analyzer/{NameOfAnalyzer}/healthcheck"
- */
+// HealthCheck checks if the specified analyzer is up and running
+//
+//	Endpoint: GET /api/analyzer/{NameOfAnalyzer}/healthcheck
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyzer/operation/analyzer_healthcheck_retrieve
 func (analyzerService *AnalyzerService) HealthCheck(ctx context.Context, analyzerName string) (bool, error) {
 	requestUrl := fmt.Sprintf(ANALYZER_HEALTHCHECK_URL, analyzerService.client.options.Url, analyzerName)
 	contentType := "application/json"
