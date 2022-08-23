@@ -7,19 +7,26 @@ import (
 	"sort"
 )
 
+// ConnectorConfig represents how a connector is configured in IntelOwl.
+//
+// IntelOwl docs: https://intelowl.readthedocs.io/en/latest/Usage.html#connectors-customization
 type ConnectorConfig struct {
 	BaseConfigurationType
 	MaximumTlp TLP `json:"maximum_tlp"`
 }
 
+// ConnectorService handles communication with connector related methods of the IntelOwl API.
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/connector
 type ConnectorService struct {
 	client *IntelOwlClient
 }
 
-/*
-* Desc: get the connector configurations of your intelowl instance
-* Endpoint: GET /api/get_connector_configs
- */
+// GetConfigs lists down every connector configuration in your IntelOwl instance.
+//
+//	Endpoint: GET /api/get_connector_configs
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/get_connector_configs
 func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]ConnectorConfig, error) {
 	requestUrl := fmt.Sprintf(CONNECTOR_CONFIG_URL, connectorService.client.options.Url)
 	contentType := "application/json"
@@ -53,10 +60,11 @@ func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]Co
 	return &connectorConfigurationList, nil
 }
 
-/*
-* Desc: Checking if your connector is up and running!
-* Endpoint: GET /api/connector/{NameOfConnector}/healthcheck
- */
+// HealthCheck checks if the specified connector is up and running
+//
+//	Endpoint: GET /api/connector/{NameOfConnector}/healthcheck
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/connector/operation/connector_healthcheck_retrieve
 func (connectorService *ConnectorService) HealthCheck(ctx context.Context, connectorName string) (bool, error) {
 	requestUrl := fmt.Sprintf(CONNECTOR_HEALTHCHECK_URL, connectorService.client.options.Url, connectorName)
 	contentType := "application/json"

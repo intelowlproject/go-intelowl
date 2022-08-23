@@ -1,3 +1,7 @@
+// go-intelowl provides an SDK to easily integrate intelowl with your own set of tools.
+
+// go-intelowl makes it easy to automate, configure, and use intelowl with your own set of tools
+// with its Idiomatic approach making an analysis is easy as just writing one line of code!
 package gointelowl
 
 import (
@@ -12,18 +16,21 @@ import (
 	"time"
 )
 
+// IntelOwlError represents an error that has occurred when communicating with IntelOwl.
 type IntelOwlError struct {
 	StatusCode int
 	Message    string
 	Response   *http.Response
 }
 
-// * implementing the error interface
+// Error lets you implement the error interface.
+// This is used for making custom go errors.
 func (intelOwlError *IntelOwlError) Error() string {
 	errorMessage := fmt.Sprintf("Status Code: %d \n Error: %s", intelOwlError.StatusCode, intelOwlError.Message)
 	return errorMessage
 }
 
+// newIntelOwlError lets you easily create new IntelOwlErrors.
 func newIntelOwlError(statusCode int, message string, response *http.Response) *IntelOwlError {
 	return &IntelOwlError{
 		StatusCode: statusCode,
@@ -37,15 +44,17 @@ type successResponse struct {
 	Data       []byte
 }
 
+// IntelOwlClientOptions represents the fields needed to configure and use the IntelOwlClient
 type IntelOwlClientOptions struct {
 	Url   string `json:"url"`
 	Token string `json:"token"`
-	// so basically your SSL cert: path to the cert file!
+	// Certificate represents your SSL cert: path to the cert file!
 	Certificate string `json:"certificate"`
-	// Timeout in seconds
+	// Timeout is in seconds
 	Timeout uint64 `json:"timeout"`
 }
 
+// IntelOwlClient handles all the communication with your IntelOwl instance.
 type IntelOwlClient struct {
 	options          *IntelOwlClientOptions
 	client           *http.Client
@@ -56,10 +65,12 @@ type IntelOwlClient struct {
 	Logger           *IntelOwlLogger
 }
 
-// * enum for TLP attribute used in the IntelOwl API
+// TLP represents an enum for the TLP attribute used in IntelOwl's REST API.
+//
+// IntelOwl docs: https://intelowl.readthedocs.io/en/latest/Usage.html#tlp-support
 type TLP int
 
-// * making the values of TLP
+// Values of the TLP enum.
 const (
 	WHITE TLP = iota + 1
 	GREEN
@@ -67,7 +78,7 @@ const (
 	RED
 )
 
-// * To easily access the TLP enum values
+// TLPVALUES represents a map to easily access the TLP values.
 var TLPVALUES = map[string]int{
 	"WHITE": 1,
 	"GREEN": 2,
@@ -75,7 +86,7 @@ var TLPVALUES = map[string]int{
 	"RED":   4,
 }
 
-// * Overriding the String method to get the string representation of the enum
+// Overriding the String method to get the string representation of the TLP enum
 func (tlp TLP) String() string {
 	switch tlp {
 	case WHITE:
@@ -90,7 +101,7 @@ func (tlp TLP) String() string {
 	return "WHITE"
 }
 
-// * To easily make the TLP enum
+// ParseTLP is used to easily make a TLP enum
 func ParseTLP(s string) TLP {
 	s = strings.TrimSpace(s)
 	value, ok := TLPVALUES[s]
@@ -100,12 +111,12 @@ func ParseTLP(s string) TLP {
 	return TLP(value)
 }
 
-// * Implementing the MarshalJSON interface to make our custom Marshal for the enum
+// Implementing the MarshalJSON interface to make our custom Marshal for the enum
 func (tlp TLP) MarshalJSON() ([]byte, error) {
 	return json.Marshal(tlp.String())
 }
 
-// * Implementing the UnmarshalJSON interface to make our custom Unmarshal for the enum
+// Implementing the UnmarshalJSON interface to make our custom Unmarshal for the enum
 func (tlp *TLP) UnmarshalJSON(data []byte) (err error) {
 	var tlpString string
 	if err := json.Unmarshal(data, &tlpString); err != nil {
@@ -117,6 +128,7 @@ func (tlp *TLP) UnmarshalJSON(data []byte) (err error) {
 	return nil
 }
 
+// NewIntelOwlClient lets you easily create a new IntelOwlClient by providing IntelOwlClientOptions, http.Clients, and LoggerParams.
 func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, loggerParams *LoggerParams) IntelOwlClient {
 
 	var timeout time.Duration
@@ -155,6 +167,7 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, 
 	return client
 }
 
+// NewIntelOwlClientThroughJsonFile lets you create a new IntelOwlClient through a JSON file that contains your IntelOwlClientOptions
 func NewIntelOwlClientThroughJsonFile(filePath string, httpClient *http.Client, loggerParams *LoggerParams) (*IntelOwlClient, error) {
 	optionsBytes, err := os.ReadFile(filePath)
 	if err != nil {
@@ -173,6 +186,7 @@ func NewIntelOwlClientThroughJsonFile(filePath string, httpClient *http.Client, 
 	return &intelOwlClient, nil
 }
 
+// buildRequest is used for building requests.
 func (client *IntelOwlClient) buildRequest(ctx context.Context, method string, contentType string, body io.Reader, url string) (*http.Request, error) {
 	request, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
@@ -186,10 +200,11 @@ func (client *IntelOwlClient) buildRequest(ctx context.Context, method string, c
 	return request, nil
 }
 
+// newRequest is used for making requests.
 func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Request) (*successResponse, error) {
 	response, err := client.client.Do(request)
 
-	// * Checking for context errors such as reaching the deadline and/or Timeout
+	// Checking for context errors such as reaching the deadline and/or Timeout
 	if err != nil {
 		select {
 		case <-ctx.Done():

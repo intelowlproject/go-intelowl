@@ -9,23 +9,27 @@ import (
 	"net/http"
 )
 
+// TagParams represents the fields needed for creating and updating tags
 type TagParams struct {
 	Label string `json:"label"`
 	Color string `json:"color"`
 }
 
+// Tag represents a tag in an IntelOwl job.
 type Tag struct {
 	ID    uint64 `json:"id"`
 	Label string `json:"label"`
 	Color string `json:"color"`
 }
 
-// * Service Object!
+// TagService handles communication with tag related methods of IntelOwl API.
+//
+// IntelOwl REST API tag docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags
 type TagService struct {
 	client *IntelOwlClient
 }
 
-// * helper functions!
+// checkTagID is used to check if a tag	ID is valid (id should be greater than zero).
 func checkTagID(id uint64) error {
 	if id > 0 {
 		return nil
@@ -33,10 +37,11 @@ func checkTagID(id uint64) error {
 	return errors.New("Tag ID cannot be 0")
 }
 
-/*
-* Desc: Getting all tags
-* Endpoint: GET "/api/tags"
- */
+// List fetches all the working tags in IntelOwl.
+//
+//	Endpoint: GET "/api/tags"
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_list
 func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
 	requestUrl := fmt.Sprintf(BASE_TAG_URL, tagService.client.options.Url)
 	contentType := "application/json"
@@ -58,10 +63,11 @@ func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
 	return &tagList, nil
 }
 
-/*
-* Desc: Getting a tag through it ID!
-* Endpoint: GET "/api/tags/{id}"
- */
+// Get fetches a specific tag through its tag ID.
+//
+//	Endpoint: GET "/api/tags/{id}"
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_retrieve
 func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, error) {
 	if err := checkTagID(tagId); err != nil {
 		return nil, err
@@ -85,10 +91,11 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 	return &tagResponse, nil
 }
 
-/*
-* Desc: Creating a Tag!
-* Endpoint: POST "/api/tags/"
- */
+// Create lets you easily create a new tag by passing TagParams.
+//
+//	Endpoint: POST "/api/tags/"
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_create
 func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) {
 	requestUrl := fmt.Sprintf(BASE_TAG_URL, tagService.client.options.Url)
 	tagJson, err := json.Marshal(tagParams)
@@ -114,10 +121,11 @@ func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) 
 	return &createdTag, nil
 }
 
-/*
-* Desc: Updating a tag through it ID!
-* Endpoint: PUT "/api/tags/{id}"
- */
+// Update lets you edit a tag throght its tag ID.
+//
+//	Endpoint: PUT "/api/tags/{id}"
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_update
 func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParams *TagParams) (*Tag, error) {
 	requestUrl := fmt.Sprintf(SPECIFIC_TAG_URL, tagService.client.options.Url, tagId)
 	// Getting the relevant JSON data
@@ -145,10 +153,11 @@ func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParam
 	return &updatedTag, nil
 }
 
-/*
-* Desc: Deleting a tag through it ID!
-* Endpoint: DELETE "/api/tags/{id}"
- */
+// Delete removes the given tag from your IntelOwl instance.
+//
+//	Endpoint: DELETE "/api/tags/{id}"
+//
+// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_destroy
 func (tagService *TagService) Delete(ctx context.Context, tagId uint64) (bool, error) {
 	if err := checkTagID(tagId); err != nil {
 		return false, err
