@@ -16,6 +16,7 @@ func main() {
 		Url:         "PUT-YOUR-INTELOWL-INSTANCE-URL-HERE",
 		Token:       "PUT-YOUR-TOKEN-HERE",
 		Certificate: "",
+		Timeout:     0,
 	}
 
 	loggerParams := &gointelowl.LoggerParams{
