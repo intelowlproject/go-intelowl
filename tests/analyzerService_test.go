@@ -3,11 +3,10 @@ package tests
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/intelowlproject/go-intelowl/gointelowl"
 )
 
@@ -83,21 +82,15 @@ func TestAnalyzerServiceGetConfigs(t *testing.T) {
 	for name, testCase := range testCases {
 		// *Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
+			apiHandler.Handle("/api/get_analyzer_configs", serverHandler(testCase))
 			gottenAnalyzerConfigList, err := client.AnalyzerService.GetConfigs(ctx)
-			if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-				diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-				if diff != "" {
-					t.Fatalf(diff)
-				}
+			if err != nil {
+				testError(t, testCase, err)
 			} else {
-				diff := cmp.Diff(testCase.Want, (*gottenAnalyzerConfigList))
-				if diff != "" {
-					t.Fatalf(diff)
-				}
+				testWantData(t, testCase.Want, (*gottenAnalyzerConfigList))
 			}
 		})
 	}
@@ -124,23 +117,18 @@ func TestAnalyzerServiceHealthCheck(t *testing.T) {
 	for name, testCase := range testCases {
 		// *Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
 			input, ok := testCase.Input.(string)
 			if ok {
+				testUrl := fmt.Sprintf("/api/analyzer/%s/healthcheck", input)
+				apiHandler.Handle(testUrl, serverHandler(testCase))
 				status, err := client.AnalyzerService.HealthCheck(ctx, input)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, status)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, status)
 				}
 			}
 		})
