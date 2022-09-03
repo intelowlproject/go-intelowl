@@ -85,7 +85,7 @@ func TestAnalyzerServiceGetConfigs(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
 			ctx := context.Background()
-			apiHandler.Handle("/api/get_analyzer_configs", serverHandler(testCase))
+			apiHandler.Handle("/api/get_analyzer_configs", serverHandler(t, testCase, "GET"))
 			gottenAnalyzerConfigList, err := client.AnalyzerService.GetConfigs(ctx)
 			if err != nil {
 				testError(t, testCase, err)
@@ -123,7 +123,7 @@ func TestAnalyzerServiceHealthCheck(t *testing.T) {
 			input, ok := testCase.Input.(string)
 			if ok {
 				testUrl := fmt.Sprintf("/api/analyzer/%s/healthcheck", input)
-				apiHandler.Handle(testUrl, serverHandler(testCase))
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "GET"))
 				status, err := client.AnalyzerService.HealthCheck(ctx, input)
 				if err != nil {
 					testError(t, testCase, err)

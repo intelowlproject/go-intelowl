@@ -12,12 +12,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// var (
-// 	TestServer *httptest.Server
-// 	ApiHandler *http.ServeMux
-// 	TestClient gointelowl.IntelOwlClient
-// )
-
 // * Test Data Struct used for every struct obj
 type TestData struct {
 	Input      interface{}
@@ -26,6 +20,7 @@ type TestData struct {
 	Want       interface{}
 }
 
+// Setting up the router, client, and test server
 func setup() (testClient gointelowl.IntelOwlClient, apiHandler *http.ServeMux, closeServer func()) {
 
 	apiHandler = http.NewServeMux()
@@ -38,6 +33,17 @@ func setup() (testClient gointelowl.IntelOwlClient, apiHandler *http.ServeMux, c
 
 }
 
+// Helper test
+// Testing the request method is as expected
+func testMethod(t *testing.T, request *http.Request, wantedMethod string) {
+	t.Helper()
+	if got := request.Method; got != wantedMethod {
+		t.Errorf("Request method: %v, want %v", got, wantedMethod)
+	}
+}
+
+// Helper test
+// Testing if it was an Error response
 func testError(t *testing.T, testData TestData, err error) {
 	t.Helper()
 	if testData.StatusCode < http.StatusOK || testData.StatusCode >= http.StatusBadRequest {
@@ -48,6 +54,8 @@ func testError(t *testing.T, testData TestData, err error) {
 	}
 }
 
+// Helper test
+// Testing if it was the expected response
 func testWantData(t *testing.T, want interface{}, data interface{}) {
 	t.Helper()
 	diff := cmp.Diff(want, data)
@@ -56,8 +64,9 @@ func testWantData(t *testing.T, want interface{}, data interface{}) {
 	}
 }
 
-func serverHandler(testData TestData) http.Handler {
+func serverHandler(t *testing.T, testData TestData, expectedMethod string) http.Handler {
 	handler := func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, expectedMethod)
 		if testData.StatusCode > 0 {
 			w.WriteHeader(testData.StatusCode)
 		}
@@ -71,21 +80,6 @@ func serverHandler(testData TestData) http.Handler {
 	}
 
 	return http.HandlerFunc(handler)
-}
-
-func NewTestServer(testData *TestData) *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if testData.StatusCode > 0 {
-			w.WriteHeader(testData.StatusCode)
-		}
-		if len(testData.Data) > 0 {
-			_, err := w.Write([]byte(testData.Data))
-			if err != nil {
-				//* writing an empty object to signifiy could not convert data!
-				fmt.Fprintf(w, "{}")
-			}
-		}
-	}))
 }
 
 func NewTestIntelOwlClient(url string) gointelowl.IntelOwlClient {

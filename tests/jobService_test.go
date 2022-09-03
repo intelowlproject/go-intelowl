@@ -31,7 +31,7 @@ func TestJobServiceList(t *testing.T) {
 				client, apiHandler, closeServer := setup()
 				defer closeServer()
 				ctx := context.Background()
-				apiHandler.Handle("/api/jobs", serverHandler(testCase))
+				apiHandler.Handle("/api/jobs", serverHandler(t, testCase, "GET"))
 				gottenJobList, err := client.JobService.List(ctx)
 				if err != nil {
 					testError(t, testCase, err)
@@ -78,7 +78,7 @@ func TestJobServiceGet(t *testing.T) {
 				if ok {
 					jobId := uint64(id)
 					testUrl := fmt.Sprintf("/api/jobs/%d", jobId)
-					apiHandler.Handle(testUrl, serverHandler(testCase))
+					apiHandler.Handle(testUrl, serverHandler(t, testCase, "GET"))
 					gottenJob, err := client.JobService.Get(ctx, jobId)
 					if err != nil {
 						testError(t, testCase, err)
@@ -122,7 +122,7 @@ func TestJobServiceDownloadSample(t *testing.T) {
 			if ok {
 				jobId := uint64(id)
 				testUrl := fmt.Sprintf("/api/jobs/%d/download_sample", jobId)
-				apiHandler.Handle(testUrl, serverHandler(testCase))
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "GET"))
 				gottenSample, err := client.JobService.DownloadSample(ctx, jobId)
 				if err != nil {
 					testError(t, testCase, err)
@@ -165,7 +165,7 @@ func TestJobServiceDelete(t *testing.T) {
 			if ok {
 				jobId := uint64(id)
 				testUrl := fmt.Sprintf("/api/jobs/%d", jobId)
-				apiHandler.Handle(testUrl, serverHandler(testCase))
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "DELETE"))
 				isDeleted, err := client.JobService.Delete(ctx, jobId)
 				if err != nil {
 					testError(t, testCase, err)
@@ -214,7 +214,7 @@ func TestJobServiceKill(t *testing.T) {
 			if ok {
 				jobId := uint64(id)
 				testUrl := fmt.Sprintf("/api/jobs/%d/kill", jobId)
-				apiHandler.Handle(testUrl, serverHandler(testCase))
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PATCH"))
 				isDeleted, err := client.JobService.Kill(ctx, jobId)
 				if err != nil {
 					testError(t, testCase, err)
@@ -276,7 +276,7 @@ func TestJobServiceKillAnalyzer(t *testing.T) {
 			inputData, ok := testCase.Input.(input)
 			if ok {
 				testUrl := fmt.Sprintf("/api/jobs/%d/analyzer/%s/kill", inputData.Id, inputData.Name)
-				apiHandler.Handle(testUrl, serverHandler(testCase))
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PATCH"))
 				isDeleted, err := client.JobService.KillAnalyzer(ctx, inputData.Id, inputData.Name)
 				if err != nil {
 					testError(t, testCase, err)
@@ -309,7 +309,7 @@ func TestJobServiceRetryAnalyzer(t *testing.T) {
 			inputData, ok := testCase.Input.(input)
 			if ok {
 				testUrl := fmt.Sprintf("/api/jobs/%d/analyzer/%s/retry", inputData.Id, inputData.Name)
-				apiHandler.Handle(testUrl, serverHandler(testCase))
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PATCH"))
 				retry, err := client.JobService.RetryAnalyzer(ctx, inputData.Id, inputData.Name)
 				if err != nil {
 					testError(t, testCase, err)
@@ -342,7 +342,7 @@ func TestJobServiceKillConnector(t *testing.T) {
 			inputData, ok := testCase.Input.(input)
 			if ok {
 				testUrl := fmt.Sprintf("/api/jobs/%d/connector/%s/kill", inputData.Id, inputData.Name)
-				apiHandler.Handle(testUrl, serverHandler(testCase))
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PATCH"))
 				isDeleted, err := client.JobService.KillConnector(ctx, inputData.Id, inputData.Name)
 				if err != nil {
 					testError(t, testCase, err)
@@ -375,7 +375,7 @@ func TestJobServiceRetryConnector(t *testing.T) {
 			inputData, ok := testCase.Input.(input)
 			if ok {
 				testUrl := fmt.Sprintf("/api/jobs/%d/connector/%s/retry", inputData.Id, inputData.Name)
-				apiHandler.Handle(testUrl, serverHandler(testCase))
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PATCH"))
 				retry, err := client.JobService.RetryConnector(ctx, inputData.Id, inputData.Name)
 				if err != nil {
 					testError(t, testCase, err)

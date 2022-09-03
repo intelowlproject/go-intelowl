@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/intelowlproject/go-intelowl/gointelowl"
 )
 
@@ -46,7 +44,7 @@ func TestTagServiceList(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
-			apiHandler.Handle("/api/tags", serverHandler(testCase))
+			apiHandler.Handle("/api/tags", serverHandler(t, testCase, "GET"))
 			ctx := context.Background()
 			gottenTagList, err := client.TagService.List(ctx)
 			if err != nil {
@@ -89,7 +87,7 @@ func TestTagServiceGet(t *testing.T) {
 			if ok {
 				tagId := uint64(id)
 				testUrl := fmt.Sprintf("/api/tags/%d", tagId)
-				apiHandler.Handle(testUrl, serverHandler(testCase))
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "GET"))
 				gottenTag, err := client.TagService.Get(ctx, tagId)
 				// Helper test to check error
 				if err != nil {
@@ -139,7 +137,7 @@ func TestTagServiceCreate(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
 			ctx := context.Background()
-			apiHandler.Handle("/api/tags", serverHandler(testCase))
+			apiHandler.Handle("/api/tags", serverHandler(t, testCase, "POST"))
 			tagParams, ok := testCase.Input.(gointelowl.TagParams)
 			if ok {
 				gottenTag, err := client.TagService.Create(ctx, &tagParams)
@@ -181,7 +179,7 @@ func TestTagServiceUpdate(t *testing.T) {
 			tag, ok := testCase.Input.(gointelowl.Tag)
 			if ok {
 				testUrl := fmt.Sprintf("/api/tags/%d", tag.ID)
-				apiHandler.Handle(testUrl, serverHandler(testCase))
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PUT"))
 				gottenTag, err := client.TagService.Update(ctx, tag.ID, &gointelowl.TagParams{
 					Label: tag.Label,
 					Color: tag.Color,
@@ -215,18 +213,12 @@ func TestTagServiceDelete(t *testing.T) {
 			if ok {
 				tagId := uint64(id)
 				testUrl := fmt.Sprintf("/api/tags/%d", tagId)
-				apiHandler.Handle(testUrl, serverHandler(testCase))
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "DELETE"))
 				isDeleted, err := client.TagService.Delete(ctx, tagId)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, isDeleted)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, isDeleted)
 				}
 			}
 		})
