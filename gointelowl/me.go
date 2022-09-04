@@ -69,18 +69,11 @@ type InvitationParams struct {
 	Status       string             `json:"status"`
 }
 
-<<<<<<< HEAD
 // Get retrieves user details
 //
 //	Endpoint: GET /api/me/access
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_access_retrieve
-=======
-/*
-* Desc: Get User Details
-* Endpoint: GET /api/me/access
- */
->>>>>>> 257680317d89984491a227ed5cbef1defea3dec9
 func (userService *UserService) Access(ctx context.Context) (*User, error) {
 	requestUrl := fmt.Sprintf("%s/api/me/access", userService.client.options.Url)
 	contentType := "application/json"
@@ -100,18 +93,11 @@ func (userService *UserService) Access(ctx context.Context) (*User, error) {
 	return &user, nil
 }
 
-<<<<<<< HEAD
 // Organization returns the organization's details.
 //
 //	Endpoint: GET /api/me/organization
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_list
-=======
-/*
-* Desc: Get Organization details!
-* Endpoint: GET /api/me/organization
- */
->>>>>>> 257680317d89984491a227ed5cbef1defea3dec9
 func (userService *UserService) Organization(ctx context.Context) (*Organization, error) {
 	requestUrl := fmt.Sprintf("%s/api/me/organization", userService.client.options.Url)
 	contentType := "application/json"
@@ -132,18 +118,11 @@ func (userService *UserService) Organization(ctx context.Context) (*Organization
 	return &org, nil
 }
 
-<<<<<<< HEAD
 // CreateOrganization allows you to create a super cool organization!
 //
 //	Endpoint: POST /api/me/organization
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_create
-=======
-/*
-* Desc: Create a super cool organization!
-* Endpoint: POST /api/me/organization
- */
->>>>>>> 257680317d89984491a227ed5cbef1defea3dec9
 func (userService *UserService) CreateOrganization(ctx context.Context, organizationParams *OrganizationParams) (*Organization, error) {
 	requestUrl := fmt.Sprintf("%s/api/me/organization", userService.client.options.Url)
 	// Getting the relevant JSON data
@@ -170,19 +149,12 @@ func (userService *UserService) CreateOrganization(ctx context.Context, organiza
 	return &org, nil
 }
 
-<<<<<<< HEAD
 // InviteToOrganization allows you to invite someone to your super cool organization!
 // This is only accessible to the organization's owner.
 //
 //	Endpoint: POST /api/me/organization/invite
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_invite_create
-=======
-/*
-* Desc: Invite someone to your super cool Organization!
-* Endpoint: POST /api/me/organization/invite
- */
->>>>>>> 257680317d89984491a227ed5cbef1defea3dec9
 func (userService *UserService) InviteToOrganization(ctx context.Context, memberParams *MemberParams) (*Invite, error) {
 	requestUrl := fmt.Sprintf("%s/api/me/organization/invite", userService.client.options.Url)
 	// Getting the relevant JSON data
@@ -209,19 +181,12 @@ func (userService *UserService) InviteToOrganization(ctx context.Context, member
 	return &invite, nil
 }
 
-<<<<<<< HEAD
 // RemoveMemberFromOrganization lets you remove someone from your super cool organization! (you had your reasons)
 // This is only accessible to the organization's owner.
 //
 //	Endpoint: POST /api/me/organization
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_create
-=======
-/*
-* Desc: Remove someone from your super cool Organization! (you had your reasons)
-* Endpoint: POST /api/me/organization/remove_member
- */
->>>>>>> 257680317d89984491a227ed5cbef1defea3dec9
 func (userService *UserService) RemoveMemberFromOrganization(ctx context.Context, memberParams *MemberParams) (bool, error) {
 	requestUrl := fmt.Sprintf("%s/api/me/organization/remove_member", userService.client.options.Url)
 	// Getting the relevant JSON data

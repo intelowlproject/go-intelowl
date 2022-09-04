@@ -62,10 +62,7 @@ type IntelOwlClient struct {
 	JobService       *JobService
 	AnalyzerService  *AnalyzerService
 	ConnectorService *ConnectorService
-<<<<<<< HEAD
 	Logger           *IntelOwlLogger
-=======
->>>>>>> 257680317d89984491a227ed5cbef1defea3dec9
 	UserService      *UserService
 }
 
@@ -164,13 +161,10 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, 
 	client.ConnectorService = &ConnectorService{
 		client: &client,
 	}
-<<<<<<< HEAD
 
 	client.Logger = &IntelOwlLogger{}
 	client.Logger.Init(loggerParams)
 
-=======
->>>>>>> 257680317d89984491a227ed5cbef1defea3dec9
 	client.UserService = &UserService{
 		client: &client,
 	}
