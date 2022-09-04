@@ -3,11 +3,10 @@ package tests
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/intelowlproject/go-intelowl/gointelowl"
 )
 
@@ -29,17 +28,15 @@ func TestJobServiceList(t *testing.T) {
 		for name, testCase := range testCases {
 			//* Subtest
 			t.Run(name, func(t *testing.T) {
-				testServer := NewTestServer(&testCase)
-				defer testServer.Close()
-				client := NewTestIntelOwlClient(testServer.URL)
+				client, apiHandler, closeServer := setup()
+				defer closeServer()
 				ctx := context.Background()
+				apiHandler.Handle("/api/jobs", serverHandler(t, testCase, "GET"))
 				gottenJobList, err := client.JobService.List(ctx)
 				if err != nil {
-					t.Fatalf("Error listing Jobs: %v", err)
-				}
-				diff := cmp.Diff(testCase.Want, gottenJobList)
-				if diff != "" {
-					t.Fatalf(diff)
+					testError(t, testCase, err)
+				} else {
+					testWantData(t, testCase.Want, gottenJobList)
 				}
 			})
 		}
@@ -74,24 +71,19 @@ func TestJobServiceGet(t *testing.T) {
 		for name, testCase := range testCases {
 			//* Subtest
 			t.Run(name, func(t *testing.T) {
-				testServer := NewTestServer(&testCase)
-				defer testServer.Close()
-				client := NewTestIntelOwlClient(testServer.URL)
+				client, apiHandler, closeServer := setup()
+				defer closeServer()
 				ctx := context.Background()
 				id, ok := testCase.Input.(int)
 				if ok {
 					jobId := uint64(id)
+					testUrl := fmt.Sprintf("/api/jobs/%d", jobId)
+					apiHandler.Handle(testUrl, serverHandler(t, testCase, "GET"))
 					gottenJob, err := client.JobService.Get(ctx, jobId)
-					if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-						diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-						if diff != "" {
-							t.Fatalf(diff)
-						}
+					if err != nil {
+						testError(t, testCase, err)
 					} else {
-						diff := cmp.Diff(testCase.Want, gottenJob)
-						if diff != "" {
-							t.Fatalf(diff)
-						}
+						testWantData(t, testCase.Want, gottenJob)
 					}
 				} else {
 					t.Fatalf("Casting failed!")
@@ -123,24 +115,19 @@ func TestJobServiceDownloadSample(t *testing.T) {
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
 			id, ok := testCase.Input.(int)
 			if ok {
 				jobId := uint64(id)
+				testUrl := fmt.Sprintf("/api/jobs/%d/download_sample", jobId)
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "GET"))
 				gottenSample, err := client.JobService.DownloadSample(ctx, jobId)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, gottenSample)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, gottenSample)
 				}
 			} else {
 				t.Fatalf("Casting failed!")
@@ -171,24 +158,19 @@ func TestJobServiceDelete(t *testing.T) {
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
 			id, ok := testCase.Input.(int)
 			if ok {
 				jobId := uint64(id)
+				testUrl := fmt.Sprintf("/api/jobs/%d", jobId)
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "DELETE"))
 				isDeleted, err := client.JobService.Delete(ctx, jobId)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, isDeleted)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, isDeleted)
 				}
 			}
 		})
@@ -225,24 +207,19 @@ func TestJobServiceKill(t *testing.T) {
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
 			id, ok := testCase.Input.(int)
 			if ok {
 				jobId := uint64(id)
+				testUrl := fmt.Sprintf("/api/jobs/%d/kill", jobId)
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PATCH"))
 				isDeleted, err := client.JobService.Kill(ctx, jobId)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, isDeleted)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, isDeleted)
 				}
 			}
 		})
@@ -293,23 +270,18 @@ func TestJobServiceKillAnalyzer(t *testing.T) {
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
 			inputData, ok := testCase.Input.(input)
 			if ok {
+				testUrl := fmt.Sprintf("/api/jobs/%d/analyzer/%s/kill", inputData.Id, inputData.Name)
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PATCH"))
 				isDeleted, err := client.JobService.KillAnalyzer(ctx, inputData.Id, inputData.Name)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, isDeleted)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, isDeleted)
 				}
 			}
 		})
@@ -331,23 +303,18 @@ func TestJobServiceRetryAnalyzer(t *testing.T) {
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
 			inputData, ok := testCase.Input.(input)
 			if ok {
+				testUrl := fmt.Sprintf("/api/jobs/%d/analyzer/%s/retry", inputData.Id, inputData.Name)
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PATCH"))
 				retry, err := client.JobService.RetryAnalyzer(ctx, inputData.Id, inputData.Name)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, retry)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, retry)
 				}
 			}
 		})
@@ -369,23 +336,18 @@ func TestJobServiceKillConnector(t *testing.T) {
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
 			inputData, ok := testCase.Input.(input)
 			if ok {
+				testUrl := fmt.Sprintf("/api/jobs/%d/connector/%s/kill", inputData.Id, inputData.Name)
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PATCH"))
 				isDeleted, err := client.JobService.KillConnector(ctx, inputData.Id, inputData.Name)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, isDeleted)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, isDeleted)
 				}
 			}
 		})
@@ -407,23 +369,18 @@ func TestJobServiceRetryConnector(t *testing.T) {
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
 			inputData, ok := testCase.Input.(input)
 			if ok {
+				testUrl := fmt.Sprintf("/api/jobs/%d/connector/%s/retry", inputData.Id, inputData.Name)
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PATCH"))
 				retry, err := client.JobService.RetryConnector(ctx, inputData.Id, inputData.Name)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, retry)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, retry)
 				}
 			}
 		})

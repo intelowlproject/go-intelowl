@@ -38,7 +38,7 @@ $ go get github.com/intelowlproject/go-intelowl
 ## Usage
 This library was built with ease of use in mind! Here are some quick examples to get you started. If you need more example you can go to the [examples directory](./examples/)
 
-To start using the gointelowl library you  first need to import it:
+To start using the go-intelowl library you first need to import it:
 ```
 import "github.com/intelowlproject/go-intelowl/gointelowl"
 ```
@@ -117,8 +117,7 @@ func main(){
 }
 
 ```
-<!-- TODO: ADD THE PKG LINK-->
-For complete usage of go-intelowl, see the full [package docs]().
+For complete usage of go-intelowl, see the full [package docs](https://pkg.go.dev/github.com/intelowlproject/go-intelowl).
 
 # Contribute
 See our [contributor page]() for details how to contribute. If you want to follow the updates, discuss, or just chat then please join our [slack](https://honeynetpublic.slack.com/archives/C01KVGMAKL6) channel we'd love to hear your feedback!

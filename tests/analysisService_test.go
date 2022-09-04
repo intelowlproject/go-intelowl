@@ -8,8 +8,6 @@ import (
 	"path"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/intelowlproject/go-intelowl/gointelowl"
 )
 
@@ -40,23 +38,17 @@ func TestCreateObservableAnalysis(t *testing.T) {
 	}
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
+			apiHandler.Handle("/api/analyze_observable", serverHandler(t, testCase, "POST"))
 			observableParams, ok := testCase.Input.(gointelowl.ObservableAnalysisParams)
 			if ok {
 				gottenAnalysisResponse, err := client.CreateObservableAnalysis(ctx, &observableParams)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, gottenAnalysisResponse)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, gottenAnalysisResponse)
 				}
 			}
 		})
@@ -98,23 +90,17 @@ func TestCreateMultipleObservableAnalysis(t *testing.T) {
 
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
+			apiHandler.Handle("/api/analyze_multiple_observables", serverHandler(t, testCase, "POST"))
 			ctx := context.Background()
 			multipleObservableParams, ok := testCase.Input.(gointelowl.MultipleObservableAnalysisParams)
 			if ok {
 				gottenMultipleAnalysisResponse, err := client.CreateMultipleObservableAnalysis(ctx, &multipleObservableParams)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, gottenMultipleAnalysisResponse)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, gottenMultipleAnalysisResponse)
 				}
 			}
 		})
@@ -154,23 +140,17 @@ func TestCreateFileAnalysis(t *testing.T) {
 	}
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
+			apiHandler.Handle("/api/analyze_file", serverHandler(t, testCase, "POST"))
 			ctx := context.Background()
 			fileAnalysisParams, ok := testCase.Input.(gointelowl.FileAnalysisParams)
 			if ok {
 				gottenFileAnalysisResponse, err := client.CreateFileAnalysis(ctx, &fileAnalysisParams)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, gottenFileAnalysisResponse)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, gottenFileAnalysisResponse)
 				}
 			}
 		})
@@ -216,23 +196,17 @@ func TestCreateMultipleFilesAnalysis(t *testing.T) {
 	}
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
+			apiHandler.Handle("/api/analyze_mutliple_files", serverHandler(t, testCase, "POST"))
 			ctx := context.Background()
 			multipleFilesAnalysisParams, ok := testCase.Input.(gointelowl.MultipleFileAnalysisParams)
 			if ok {
 				gottenMultipleFilesAnalysisResponse, err := client.CreateMultipleFileAnalysis(ctx, &multipleFilesAnalysisParams)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, gottenMultipleFilesAnalysisResponse)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, gottenMultipleFilesAnalysisResponse)
 				}
 			}
 		})

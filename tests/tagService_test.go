@@ -2,18 +2,18 @@ package tests
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/intelowlproject/go-intelowl/gointelowl"
 )
 
 // * Test for TagService.List method!
 func TestTagServiceList(t *testing.T) {
-	// * table test case
+
 	testCases := make(map[string]TestData)
+
 	testCases["simple"] = TestData{
 		Input: nil,
 		Data: `[
@@ -41,31 +41,27 @@ func TestTagServiceList(t *testing.T) {
 		},
 	}
 	for name, testCase := range testCases {
-		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
+			apiHandler.Handle("/api/tags", serverHandler(t, testCase, "GET"))
 			ctx := context.Background()
 			gottenTagList, err := client.TagService.List(ctx)
 			if err != nil {
-				t.Fatalf("Error listing tags: %v", err)
-			}
-			diff := cmp.Diff(testCase.Want, (*gottenTagList))
-			if diff != "" {
-				t.Fatalf(diff)
+				testError(t, testCase, err)
+			} else {
+				testWantData(t, testCase.Want, (*gottenTagList))
 			}
 		})
 	}
 }
 
 func TestTagServiceGet(t *testing.T) {
-	// *table test case
 	testCases := make(map[string]TestData)
 	testCases["simple"] = TestData{
 		Input:      1,
-		Data:       `{"id": 1,"label": "TEST","color": "#1c71d8"}`,
 		StatusCode: http.StatusOK,
+		Data:       `{"id": 1,"label": "TEST","color": "#1c71d8"}`,
 		Want: &gointelowl.Tag{
 			ID:    1,
 			Label: "TEST",
@@ -74,37 +70,34 @@ func TestTagServiceGet(t *testing.T) {
 	}
 	testCases["cantFind"] = TestData{
 		Input:      9000,
-		Data:       `{"detail": "Not found."}`,
 		StatusCode: http.StatusNotFound,
+		Data:       `{"detail": "Not found."}`,
 		Want: &gointelowl.IntelOwlError{
 			StatusCode: http.StatusNotFound,
 			Message:    `{"detail": "Not found."}`,
 		},
 	}
+
 	for name, testCase := range testCases {
-		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
 			id, ok := testCase.Input.(int)
 			if ok {
 				tagId := uint64(id)
+				testUrl := fmt.Sprintf("/api/tags/%d", tagId)
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "GET"))
 				gottenTag, err := client.TagService.Get(ctx, tagId)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				// Helper test to check error
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, gottenTag)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, gottenTag)
 				}
 			} else {
 				t.Fatalf("Casting failed!")
+				t.Fatalf("You didn't pass the correct Input datatype")
 			}
 		})
 	}
@@ -141,23 +134,17 @@ func TestTagServiceCreate(t *testing.T) {
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
+			apiHandler.Handle("/api/tags", serverHandler(t, testCase, "POST"))
 			tagParams, ok := testCase.Input.(gointelowl.TagParams)
 			if ok {
 				gottenTag, err := client.TagService.Create(ctx, &tagParams)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, gottenTag)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, gottenTag)
 				}
 			} else {
 				t.Fatalf("Casting failed!")
@@ -186,26 +173,21 @@ func TestTagServiceUpdate(t *testing.T) {
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
 			tag, ok := testCase.Input.(gointelowl.Tag)
 			if ok {
+				testUrl := fmt.Sprintf("/api/tags/%d", tag.ID)
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PUT"))
 				gottenTag, err := client.TagService.Update(ctx, tag.ID, &gointelowl.TagParams{
 					Label: tag.Label,
 					Color: tag.Color,
 				})
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, gottenTag)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, gottenTag)
 				}
 			}
 		})
@@ -224,24 +206,19 @@ func TestTagServiceDelete(t *testing.T) {
 	for name, testCase := range testCases {
 		//* Subtest
 		t.Run(name, func(t *testing.T) {
-			testServer := NewTestServer(&testCase)
-			defer testServer.Close()
-			client := NewTestIntelOwlClient(testServer.URL)
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
 			ctx := context.Background()
 			id, ok := testCase.Input.(int)
 			if ok {
 				tagId := uint64(id)
+				testUrl := fmt.Sprintf("/api/tags/%d", tagId)
+				apiHandler.Handle(testUrl, serverHandler(t, testCase, "DELETE"))
 				isDeleted, err := client.TagService.Delete(ctx, tagId)
-				if testCase.StatusCode < http.StatusOK || testCase.StatusCode >= http.StatusBadRequest {
-					diff := cmp.Diff(testCase.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+				if err != nil {
+					testError(t, testCase, err)
 				} else {
-					diff := cmp.Diff(testCase.Want, isDeleted)
-					if diff != "" {
-						t.Fatalf(diff)
-					}
+					testWantData(t, testCase.Want, isDeleted)
 				}
 			}
 		})
