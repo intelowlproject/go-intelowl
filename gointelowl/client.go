@@ -62,6 +62,7 @@ type IntelOwlClient struct {
 	JobService       *JobService
 	AnalyzerService  *AnalyzerService
 	ConnectorService *ConnectorService
+	UserService      *UserService
 	Logger           *IntelOwlLogger
 }
 
@@ -139,15 +140,20 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, 
 		timeout = time.Duration(options.Timeout) * time.Second
 	}
 
+	// configuring the http.Client
 	if httpClient == nil {
 		httpClient = &http.Client{
 			Timeout: timeout,
 		}
 	}
+
+	// configuring the client
 	client := IntelOwlClient{
 		options: options,
 		client:  httpClient,
 	}
+
+	// Adding the services
 	client.TagService = &TagService{
 		client: &client,
 	}
@@ -160,7 +166,11 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, 
 	client.ConnectorService = &ConnectorService{
 		client: &client,
 	}
+	client.UserService = &UserService{
+		client: &client,
+	}
 
+	// configuring the logger!
 	client.Logger = &IntelOwlLogger{}
 	client.Logger.Init(loggerParams)
 
