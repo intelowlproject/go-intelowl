@@ -122,7 +122,7 @@ For complete usage of go-intelowl, see the full [package docs](https://pkg.go.de
 # Contribute
 See our [contributor page]() for details how to contribute. If you want to follow the updates, discuss, or just chat then please join our [slack](https://honeynetpublic.slack.com/archives/C01KVGMAKL6) channel we'd love to hear your feedback!
 
-# Liscence
+# License
 Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 
 # Links
