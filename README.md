@@ -95,8 +95,8 @@ func main(){
 	intelowlOptions := gointelowl.IntelOwlClientOptions{
 		Url:         "your-cool-url-goes-here",
 		Token:       "your-super-secret-token-goes-here",
-	}
 		Certificate: "your-optional-certificate-goes-here",
+	}	
 
 	client := gointelowl.NewIntelOwlClient(
 		&intelowlOptions,
