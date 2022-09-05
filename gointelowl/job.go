@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/intelowlproject/go-intelowl/constants"
 )
 
 // UserDetails represents user details in an IntelOwl job.
@@ -81,7 +83,7 @@ type JobService struct {
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_list
 func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error) {
-	requestUrl := fmt.Sprintf(BASE_JOB_URL, jobService.client.options.Url)
+	requestUrl := jobService.client.options.Url + constants.BASE_JOB_URL
 	contentType := "application/json"
 	method := "GET"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -107,7 +109,8 @@ func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_retrieve
 func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, error) {
-	requestUrl := fmt.Sprintf(SPECIFIC_JOB_URL, jobService.client.options.Url, jobId)
+	route := jobService.client.options.Url + constants.SPECIFIC_JOB_URL
+	requestUrl := fmt.Sprintf(route, jobId)
 	contentType := "application/json"
 	method := "GET"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -132,7 +135,8 @@ func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, erro
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_download_sample_retrieve
 func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) ([]byte, error) {
-	requestUrl := fmt.Sprintf(DOWNLOAD_SAMPLE_JOB_URL, jobService.client.options.Url, jobId)
+	route := jobService.client.options.Url + constants.DOWNLOAD_SAMPLE_JOB_URL
+	requestUrl := fmt.Sprintf(route, jobId)
 	contentType := "application/json"
 	method := "GET"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -152,7 +156,8 @@ func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) 
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_destroy
 func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, error) {
-	requestUrl := fmt.Sprintf(SPECIFIC_JOB_URL, jobService.client.options.Url, jobId)
+	route := jobService.client.options.Url + constants.SPECIFIC_JOB_URL
+	requestUrl := fmt.Sprintf(route, jobId)
 	contentType := "application/json"
 	method := "DELETE"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -175,7 +180,8 @@ func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, e
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_kill_partial_update
 func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, error) {
-	requestUrl := fmt.Sprintf(KILL_JOB_URL, jobService.client.options.Url, jobId)
+	route := jobService.client.options.Url + constants.KILL_JOB_URL
+	requestUrl := fmt.Sprintf(route, jobId)
 	contentType := "application/json"
 	method := "PATCH"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -198,7 +204,8 @@ func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, err
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_analyzer_kill_partial_update
 func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
-	requestUrl := fmt.Sprintf(KILL_ANALYZER_JOB_URL, jobService.client.options.Url, jobId, analyzerName)
+	route := jobService.client.options.Url + constants.KILL_ANALYZER_JOB_URL
+	requestUrl := fmt.Sprintf(route, jobId, analyzerName)
 	contentType := "application/json"
 	method := "PATCH"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -221,7 +228,8 @@ func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, an
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_analyzer_retry_partial_update
 func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
-	requestUrl := fmt.Sprintf(RETRY_ANALYZER_JOB_URL, jobService.client.options.Url, jobId, analyzerName)
+	route := jobService.client.options.Url + constants.RETRY_ANALYZER_JOB_URL
+	requestUrl := fmt.Sprintf(route, jobId, analyzerName)
 	contentType := "application/json"
 	method := "PATCH"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -244,7 +252,8 @@ func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, a
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_connector_kill_partial_update
 func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
-	requestUrl := fmt.Sprintf(KILL_CONNECTOR_JOB_URL, jobService.client.options.Url, jobId, connectorName)
+	route := jobService.client.options.Url + constants.KILL_CONNECTOR_JOB_URL
+	requestUrl := fmt.Sprintf(route, jobId, connectorName)
 	contentType := "application/json"
 	method := "PATCH"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -267,7 +276,8 @@ func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, c
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_connector_retry_partial_update
 func (jobService *JobService) RetryConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
-	requestUrl := fmt.Sprintf(RETRY_CONNECTOR_JOB_URL, jobService.client.options.Url, jobId, connectorName)
+	route := jobService.client.options.Url + constants.RETRY_CONNECTOR_JOB_URL
+	requestUrl := fmt.Sprintf(route, jobId, connectorName)
 	contentType := "application/json"
 	method := "PATCH"
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)

@@ -8,6 +8,7 @@ import (
 	"path"
 	"testing"
 
+	"github.com/intelowlproject/go-intelowl/constants"
 	"github.com/intelowlproject/go-intelowl/gointelowl"
 )
 
@@ -41,7 +42,7 @@ func TestCreateObservableAnalysis(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
 			ctx := context.Background()
-			apiHandler.Handle("/api/analyze_observable", serverHandler(t, testCase, "POST"))
+			apiHandler.Handle(constants.ANALYZE_OBSERVABLE_URL, serverHandler(t, testCase, "POST"))
 			observableParams, ok := testCase.Input.(gointelowl.ObservableAnalysisParams)
 			if ok {
 				gottenAnalysisResponse, err := client.CreateObservableAnalysis(ctx, &observableParams)
@@ -92,7 +93,7 @@ func TestCreateMultipleObservableAnalysis(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
-			apiHandler.Handle("/api/analyze_multiple_observables", serverHandler(t, testCase, "POST"))
+			apiHandler.Handle(constants.ANALYZE_MULTIPLE_OBSERVABLES_URL, serverHandler(t, testCase, "POST"))
 			ctx := context.Background()
 			multipleObservableParams, ok := testCase.Input.(gointelowl.MultipleObservableAnalysisParams)
 			if ok {
@@ -142,7 +143,7 @@ func TestCreateFileAnalysis(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
-			apiHandler.Handle("/api/analyze_file", serverHandler(t, testCase, "POST"))
+			apiHandler.Handle(constants.ANALYZE_FILE_URL, serverHandler(t, testCase, "POST"))
 			ctx := context.Background()
 			fileAnalysisParams, ok := testCase.Input.(gointelowl.FileAnalysisParams)
 			if ok {
@@ -198,7 +199,7 @@ func TestCreateMultipleFilesAnalysis(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
-			apiHandler.Handle("/api/analyze_mutliple_files", serverHandler(t, testCase, "POST"))
+			apiHandler.Handle(constants.ANALYZE_MULTIPLE_FILES_URL, serverHandler(t, testCase, "POST"))
 			ctx := context.Background()
 			multipleFilesAnalysisParams, ok := testCase.Input.(gointelowl.MultipleFileAnalysisParams)
 			if ok {

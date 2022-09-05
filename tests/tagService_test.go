@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/intelowlproject/go-intelowl/constants"
 	"github.com/intelowlproject/go-intelowl/gointelowl"
 )
 
@@ -44,7 +45,7 @@ func TestTagServiceList(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
-			apiHandler.Handle("/api/tags", serverHandler(t, testCase, "GET"))
+			apiHandler.Handle(constants.BASE_TAG_URL, serverHandler(t, testCase, "GET"))
 			ctx := context.Background()
 			gottenTagList, err := client.TagService.List(ctx)
 			if err != nil {
@@ -86,7 +87,7 @@ func TestTagServiceGet(t *testing.T) {
 			id, ok := testCase.Input.(int)
 			if ok {
 				tagId := uint64(id)
-				testUrl := fmt.Sprintf("/api/tags/%d", tagId)
+				testUrl := fmt.Sprintf(constants.SPECIFIC_TAG_URL, tagId)
 				apiHandler.Handle(testUrl, serverHandler(t, testCase, "GET"))
 				gottenTag, err := client.TagService.Get(ctx, tagId)
 				// Helper test to check error
@@ -137,7 +138,7 @@ func TestTagServiceCreate(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
 			ctx := context.Background()
-			apiHandler.Handle("/api/tags", serverHandler(t, testCase, "POST"))
+			apiHandler.Handle(constants.BASE_TAG_URL, serverHandler(t, testCase, "POST"))
 			tagParams, ok := testCase.Input.(gointelowl.TagParams)
 			if ok {
 				gottenTag, err := client.TagService.Create(ctx, &tagParams)
@@ -178,7 +179,7 @@ func TestTagServiceUpdate(t *testing.T) {
 			ctx := context.Background()
 			tag, ok := testCase.Input.(gointelowl.Tag)
 			if ok {
-				testUrl := fmt.Sprintf("/api/tags/%d", tag.ID)
+				testUrl := fmt.Sprintf(constants.SPECIFIC_TAG_URL, tag.ID)
 				apiHandler.Handle(testUrl, serverHandler(t, testCase, "PUT"))
 				gottenTag, err := client.TagService.Update(ctx, tag.ID, &gointelowl.TagParams{
 					Label: tag.Label,
@@ -212,7 +213,7 @@ func TestTagServiceDelete(t *testing.T) {
 			id, ok := testCase.Input.(int)
 			if ok {
 				tagId := uint64(id)
-				testUrl := fmt.Sprintf("/api/tags/%d", tagId)
+				testUrl := fmt.Sprintf(constants.SPECIFIC_TAG_URL, tagId)
 				apiHandler.Handle(testUrl, serverHandler(t, testCase, "DELETE"))
 				isDeleted, err := client.TagService.Delete(ctx, tagId)
 				if err != nil {

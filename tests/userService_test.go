@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/intelowlproject/go-intelowl/constants"
 	"github.com/intelowlproject/go-intelowl/gointelowl"
 )
 
@@ -27,7 +28,7 @@ func TestUserServiceAccess(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
-			apiHandler.Handle("/api/me/access", serverHandler(t, testCase, "GET"))
+			apiHandler.Handle(constants.USER_DETAILS_URL, serverHandler(t, testCase, "GET"))
 			ctx := context.Background()
 			gottenUserResponse, err := client.UserService.Access(ctx)
 			if err != nil {
@@ -57,7 +58,7 @@ func TestUserServiceOrganization(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
-			apiHandler.Handle("/api/me/organization", serverHandler(t, testCase, "GET"))
+			apiHandler.Handle(constants.ORGANIZATION_URL, serverHandler(t, testCase, "GET"))
 			ctx := context.Background()
 			gottenUserResponse, err := client.UserService.Organization(ctx)
 			if err != nil {
@@ -90,7 +91,7 @@ func TestUserServiceCreateOrganization(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
 			ctx := context.Background()
-			apiHandler.Handle("/api/me/organization", serverHandler(t, testCase, "POST"))
+			apiHandler.Handle(constants.ORGANIZATION_URL, serverHandler(t, testCase, "POST"))
 			params, ok := testCase.Input.(gointelowl.OrganizationParams)
 			if ok {
 				gottenOrgResponse, err := client.UserService.CreateOrganization(ctx, &params)
@@ -120,7 +121,7 @@ func TestUserServiceRemoveMemberFromOrganization(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
 			ctx := context.Background()
-			apiHandler.Handle("/api/me/organization/remove_member", serverHandler(t, testCase, "POST"))
+			apiHandler.Handle(constants.REMOVE_MEMBER_FROM_ORGANIZATION_URL, serverHandler(t, testCase, "POST"))
 			params, ok := testCase.Input.(gointelowl.MemberParams)
 			if ok {
 				left, err := client.UserService.RemoveMemberFromOrganization(ctx, &params)

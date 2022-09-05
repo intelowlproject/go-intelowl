@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/intelowlproject/go-intelowl/constants"
 )
 
 type Details struct {
@@ -75,7 +76,7 @@ type InvitationParams struct {
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_access_retrieve
 func (userService *UserService) Access(ctx context.Context) (*User, error) {
-	requestUrl := fmt.Sprintf("%s/api/me/access", userService.client.options.Url)
+	requestUrl := userService.client.options.Url + constants.USER_DETAILS_URL
 	contentType := "application/json"
 	method := "GET"
 	request, err := userService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -99,7 +100,7 @@ func (userService *UserService) Access(ctx context.Context) (*User, error) {
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_list
 func (userService *UserService) Organization(ctx context.Context) (*Organization, error) {
-	requestUrl := fmt.Sprintf("%s/api/me/organization", userService.client.options.Url)
+	requestUrl := userService.client.options.Url + constants.ORGANIZATION_URL
 	contentType := "application/json"
 	method := "GET"
 	request, err := userService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -124,7 +125,7 @@ func (userService *UserService) Organization(ctx context.Context) (*Organization
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_create
 func (userService *UserService) CreateOrganization(ctx context.Context, organizationParams *OrganizationParams) (*Organization, error) {
-	requestUrl := fmt.Sprintf("%s/api/me/organization", userService.client.options.Url)
+	requestUrl := userService.client.options.Url + constants.ORGANIZATION_URL
 	// Getting the relevant JSON data
 	orgJson, err := json.Marshal(organizationParams)
 	if err != nil {
@@ -156,7 +157,7 @@ func (userService *UserService) CreateOrganization(ctx context.Context, organiza
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_invite_create
 func (userService *UserService) InviteToOrganization(ctx context.Context, memberParams *MemberParams) (*Invite, error) {
-	requestUrl := fmt.Sprintf("%s/api/me/organization/invite", userService.client.options.Url)
+	requestUrl := userService.client.options.Url + constants.INVITE_TO_ORGANIZATION_URL
 	// Getting the relevant JSON data
 	memberJson, err := json.Marshal(memberParams)
 	if err != nil {
@@ -188,7 +189,7 @@ func (userService *UserService) InviteToOrganization(ctx context.Context, member
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_create
 func (userService *UserService) RemoveMemberFromOrganization(ctx context.Context, memberParams *MemberParams) (bool, error) {
-	requestUrl := fmt.Sprintf("%s/api/me/organization/remove_member", userService.client.options.Url)
+	requestUrl := userService.client.options.Url + constants.REMOVE_MEMBER_FROM_ORGANIZATION_URL
 	// Getting the relevant JSON data
 	memberJson, err := json.Marshal(memberParams)
 	if err != nil {

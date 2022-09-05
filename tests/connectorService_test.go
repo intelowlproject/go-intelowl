@@ -8,6 +8,7 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/intelowlproject/go-intelowl/constants"
 	"github.com/intelowlproject/go-intelowl/gointelowl"
 )
 
@@ -43,7 +44,7 @@ func TestConnectorServiceGetConfigs(t *testing.T) {
 			client, apiHandler, closeServer := setup()
 			defer closeServer()
 			ctx := context.Background()
-			apiHandler.Handle("/api/get_connector_configs", serverHandler(t, testCase, "GET"))
+			apiHandler.Handle(constants.CONNECTOR_CONFIG_URL, serverHandler(t, testCase, "GET"))
 			gottenConnectorConfigList, err := client.ConnectorService.GetConfigs(ctx)
 			if err != nil {
 				testError(t, testCase, err)
@@ -80,7 +81,7 @@ func TestConnectorServiceHealthCheck(t *testing.T) {
 			ctx := context.Background()
 			input, ok := testCase.Input.(string)
 			if ok {
-				testUrl := fmt.Sprintf("/api/connector/%s/healthcheck", input)
+				testUrl := fmt.Sprintf(constants.CONNECTOR_HEALTHCHECK_URL, input)
 				apiHandler.Handle(testUrl, serverHandler(t, testCase, "GET"))
 				status, err := client.ConnectorService.HealthCheck(ctx, input)
 				if err != nil {

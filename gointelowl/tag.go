@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/intelowlproject/go-intelowl/constants"
 )
 
 // TagParams represents the fields needed for creating and updating tags
@@ -43,7 +45,7 @@ func checkTagID(id uint64) error {
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_list
 func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
-	requestUrl := fmt.Sprintf(BASE_TAG_URL, tagService.client.options.Url)
+	requestUrl := tagService.client.options.Url + constants.BASE_TAG_URL
 	contentType := "application/json"
 	method := "GET"
 	request, err := tagService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -72,7 +74,8 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 	if err := checkTagID(tagId); err != nil {
 		return nil, err
 	}
-	requestUrl := fmt.Sprintf(SPECIFIC_TAG_URL, tagService.client.options.Url, tagId)
+	route := tagService.client.options.Url + constants.SPECIFIC_TAG_URL
+	requestUrl := fmt.Sprintf(route, tagId)
 	contentType := "application/json"
 	method := "GET"
 	request, err := tagService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -97,7 +100,7 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_create
 func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) {
-	requestUrl := fmt.Sprintf(BASE_TAG_URL, tagService.client.options.Url)
+	requestUrl := tagService.client.options.Url + constants.BASE_TAG_URL
 	tagJson, err := json.Marshal(tagParams)
 	if err != nil {
 		return nil, err
@@ -127,7 +130,8 @@ func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) 
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_update
 func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParams *TagParams) (*Tag, error) {
-	requestUrl := fmt.Sprintf(SPECIFIC_TAG_URL, tagService.client.options.Url, tagId)
+	route := tagService.client.options.Url + constants.SPECIFIC_TAG_URL
+	requestUrl := fmt.Sprintf(route, tagId)
 	// Getting the relevant JSON data
 	tagJson, err := json.Marshal(tagParams)
 	if err != nil {
@@ -162,7 +166,8 @@ func (tagService *TagService) Delete(ctx context.Context, tagId uint64) (bool, e
 	if err := checkTagID(tagId); err != nil {
 		return false, err
 	}
-	requestUrl := fmt.Sprintf(SPECIFIC_TAG_URL, tagService.client.options.Url, tagId)
+	route := tagService.client.options.Url + constants.SPECIFIC_TAG_URL
+	requestUrl := fmt.Sprintf(route, tagId)
 	contentType := "application/json"
 	method := "DELETE"
 	request, err := tagService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
