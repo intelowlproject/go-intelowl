@@ -14,7 +14,7 @@ go-intelowl is a client library/SDK that allows developers to easily automate an
 	- [Usage](#usage)
 	- [Examples](#examples)
 - [Contribute](#contribute)
-- [Liscence](#liscence)
+- [License](#liscence)
 - [Links](#links)
 - [FAQ](#faq)
 	- [Generate API key](#generate-api-key)
@@ -120,14 +120,16 @@ func main(){
 For complete usage of go-intelowl, see the full [package docs](https://pkg.go.dev/github.com/intelowlproject/go-intelowl).
 
 # Contribute
-See our [contributor page]() for details how to contribute. If you want to follow the updates, discuss, or just chat then please join our [slack](https://honeynetpublic.slack.com/archives/C01KVGMAKL6) channel we'd love to hear your feedback!
+If you want to follow the updates, discuss, contribute, or just chat then please join our [slack](https://honeynetpublic.slack.com/archives/C01KVGMAKL6) channel we'd love to hear your feedback!
 
 # License
 Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 
 # Links
 - [Intelowl](https://github.com/intelowlproject/IntelOwl)
-- [Documentation]()
+- [Documentation](https://intelowl.readthedocs.io/en/latest/)
+- [API documentation](https://intelowl.readthedocs.io/en/latest/Redoc.html)
+- [Examples](./examples/)
 
 # FAQ
 ## Generate API key
