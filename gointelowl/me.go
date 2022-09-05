@@ -69,7 +69,7 @@ type InvitationParams struct {
 	Status       string             `json:"status"`
 }
 
-// Get retrieves user details
+// Access retrieves user details
 //
 //	Endpoint: GET /api/me/access
 //
@@ -184,7 +184,7 @@ func (userService *UserService) InviteToOrganization(ctx context.Context, member
 // RemoveMemberFromOrganization lets you remove someone from your super cool organization! (you had your reasons)
 // This is only accessible to the organization's owner.
 //
-//	Endpoint: POST /api/me/organization
+//	Endpoint: POST /api/me/organization/remove_member
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_create
 func (userService *UserService) RemoveMemberFromOrganization(ctx context.Context, memberParams *MemberParams) (bool, error) {
