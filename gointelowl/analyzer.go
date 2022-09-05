@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+
+	"github.com/intelowlproject/go-intelowl/constants"
 )
 
 // AnalyzerConfig represents how an analyzer is configured in IntelOwl.
@@ -36,7 +38,7 @@ type AnalyzerService struct {
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/get_analyzer_configs
 func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]AnalyzerConfig, error) {
-	requestUrl := fmt.Sprintf(ANALYZER_CONFIG_URL, analyzerService.client.options.Url)
+	requestUrl := analyzerService.client.options.Url + constants.ANALYZER_CONFIG_URL
 	contentType := "application/json"
 	method := "GET"
 	request, err := analyzerService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
@@ -74,7 +76,8 @@ func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]Anal
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyzer/operation/analyzer_healthcheck_retrieve
 func (analyzerService *AnalyzerService) HealthCheck(ctx context.Context, analyzerName string) (bool, error) {
-	requestUrl := fmt.Sprintf(ANALYZER_HEALTHCHECK_URL, analyzerService.client.options.Url, analyzerName)
+	route := analyzerService.client.options.Url + constants.ANALYZER_HEALTHCHECK_URL
+	requestUrl := fmt.Sprintf(route, analyzerName)
 	contentType := "application/json"
 	method := "GET"
 	request, err := analyzerService.client.buildRequest(ctx, method, contentType, nil, requestUrl)

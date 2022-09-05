@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
+
+	"github.com/intelowlproject/go-intelowl/constants"
 )
 
 // BasicAnalysisParams represents the common fields in an Observable and a File analysis
@@ -67,7 +68,7 @@ type MultipleAnalysisResponse struct {
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_observable
 func (client *IntelOwlClient) CreateObservableAnalysis(ctx context.Context, params *ObservableAnalysisParams) (*AnalysisResponse, error) {
-	requestUrl := fmt.Sprintf(ANALYZE_OBSERVABLE_URL, client.options.Url)
+	requestUrl := client.options.Url + constants.ANALYZE_OBSERVABLE_URL
 	method := "POST"
 	contentType := "application/json"
 	jsonData, _ := json.Marshal(params)
@@ -96,8 +97,7 @@ func (client *IntelOwlClient) CreateObservableAnalysis(ctx context.Context, para
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_multiple_observables
 func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Context, params *MultipleObservableAnalysisParams) (*MultipleAnalysisResponse, error) {
-	requestUrl := fmt.Sprintf(ANALYZE_MULTIPLE_OBSERVABLES_URL, client.options.Url)
-
+	requestUrl := client.options.Url + constants.ANALYZE_MULTIPLE_OBSERVABLES_URL
 	method := "POST"
 	contentType := "application/json"
 	jsonData, _ := json.Marshal(params)
@@ -125,7 +125,7 @@ func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Conte
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_file
 func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalysisParams *FileAnalysisParams) (*AnalysisResponse, error) {
-	requestUrl := fmt.Sprintf(ANALYZE_FILE_URL, client.options.Url)
+	requestUrl := client.options.Url + constants.ANALYZE_FILE_URL
 	// * Making the multiform data
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -203,7 +203,7 @@ func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalys
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_multiple_files
 func (client *IntelOwlClient) CreateMultipleFileAnalysis(ctx context.Context, fileAnalysisParams *MultipleFileAnalysisParams) (*MultipleAnalysisResponse, error) {
-	requestUrl := fmt.Sprintf(ANALYZE_MULTIPLE_FILES_URL, client.options.Url)
+	requestUrl := client.options.Url + constants.ANALYZE_MULTIPLE_FILES_URL
 	// * Making the multiform data
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
