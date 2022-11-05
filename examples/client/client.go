@@ -9,17 +9,17 @@ import (
 
 func main() {
 	/*
-		Making a new client through NewIntelOwlClient:
+		Making a new client through NewClient:
 		This takes the following parameters:
-			1. IntelOwlClientOptions
+			1. ClientOptions
 			2. A *http.Client (if you do not provide one. One will be made by default)
 			3. LoggerParams
-		These are parameters that allow you to easily configure your IntelOwlClient to your liking.
+		These are parameters that allow you to easily configure your Client to your liking.
 		For a better understanding you can read it in the documentation: https://github.com/intelowlproject/go-intelowl/tree/main/examples/optionalParams
 	*/
 
-	// Configuring the IntelOwlClient!
-	clientOptions := gointelowl.IntelOwlClientOptions{
+	// Configuring the Client!
+	clientOptions := gointelowl.ClientOptions{
 		Url:         "PUT-YOUR-INTELOWL-INSTANCE-URL-HERE",
 		Token:       "PUT-YOUR-TOKEN-HERE",
 		Certificate: "",
@@ -34,7 +34,7 @@ func main() {
 	}
 
 	// Making the client!
-	client := gointelowl.NewIntelOwlClient(
+	client := gointelowl.NewClient(
 		&clientOptions,
 		nil,
 		loggerParams,

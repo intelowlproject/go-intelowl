@@ -39,11 +39,15 @@ const (
 )
 
 // These represent me endpoints URL
-
 const (
 	BASE_ME_URL                         = "/api/me"
 	USER_DETAILS_URL                    = BASE_ME_URL + "/access"
 	ORGANIZATION_URL                    = BASE_ME_URL + "/organization"
 	INVITE_TO_ORGANIZATION_URL          = ORGANIZATION_URL + "/invite"
 	REMOVE_MEMBER_FROM_ORGANIZATION_URL = ORGANIZATION_URL + "/remove_member"
+)
+
+// These represent REST API related constants
+const (
+	ContentTypeJSON = "application/json"
 )

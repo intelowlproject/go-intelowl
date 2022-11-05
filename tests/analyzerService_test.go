@@ -66,7 +66,7 @@ func TestAnalyzerServiceGetConfigs(t *testing.T) {
 		Input:      nil,
 		Data:       serverErrorString,
 		StatusCode: http.StatusInternalServerError,
-		Want: &gointelowl.IntelOwlError{
+		Want: &gointelowl.Error{
 			StatusCode: http.StatusInternalServerError,
 			Message:    serverErrorString,
 		},
@@ -75,7 +75,7 @@ func TestAnalyzerServiceGetConfigs(t *testing.T) {
 		Input:      nil,
 		Data:       badGatewayErrorString,
 		StatusCode: http.StatusBadGateway,
-		Want: &gointelowl.IntelOwlError{
+		Want: &gointelowl.Error{
 			StatusCode: http.StatusBadGateway,
 			Message:    badGatewayErrorString,
 		},
@@ -110,7 +110,7 @@ func TestAnalyzerServiceHealthCheck(t *testing.T) {
 		Input:      "notAnAnalyzer",
 		Data:       `{"errors": {"detail": "Analyzer doesn't exist"}}`,
 		StatusCode: http.StatusBadRequest,
-		Want: &gointelowl.IntelOwlError{
+		Want: &gointelowl.Error{
 			StatusCode: http.StatusBadRequest,
 			Message:    `{"errors": {"detail": "Analyzer doesn't exist"}}`,
 		},

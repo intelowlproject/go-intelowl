@@ -68,7 +68,7 @@ func TestConnectorServiceHealthCheck(t *testing.T) {
 		Input:      "notAConnector",
 		Data:       `{"errors": {"detail": "Connector doesn't exist"}}`,
 		StatusCode: http.StatusBadRequest,
-		Want: &gointelowl.IntelOwlError{
+		Want: &gointelowl.Error{
 			StatusCode: http.StatusBadRequest,
 			Message:    `{"errors": {"detail": "Connector doesn't exist"}}`,
 		},

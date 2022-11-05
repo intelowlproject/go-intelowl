@@ -21,7 +21,7 @@ type TestData struct {
 }
 
 // Setting up the router, client, and test server
-func setup() (testClient gointelowl.IntelOwlClient, apiHandler *http.ServeMux, closeServer func()) {
+func setup() (testClient gointelowl.Client, apiHandler *http.ServeMux, closeServer func()) {
 
 	apiHandler = http.NewServeMux()
 
@@ -47,7 +47,7 @@ func testMethod(t *testing.T, request *http.Request, wantedMethod string) {
 func testError(t *testing.T, testData TestData, err error) {
 	t.Helper()
 	if testData.StatusCode < http.StatusOK || testData.StatusCode >= http.StatusBadRequest {
-		diff := cmp.Diff(testData.Want, err, cmpopts.IgnoreFields(gointelowl.IntelOwlError{}, "Response"))
+		diff := cmp.Diff(testData.Want, err, cmpopts.IgnoreFields(gointelowl.Error{}, "Response"))
 		if diff != "" {
 			t.Fatalf(diff)
 		}
@@ -82,9 +82,9 @@ func serverHandler(t *testing.T, testData TestData, expectedMethod string) http.
 	return http.HandlerFunc(handler)
 }
 
-func NewTestIntelOwlClient(url string) gointelowl.IntelOwlClient {
-	return gointelowl.NewIntelOwlClient(
-		&gointelowl.IntelOwlClientOptions{
+func NewTestIntelOwlClient(url string) gointelowl.Client {
+	return gointelowl.NewClient(
+		&gointelowl.ClientOptions{
 			Url:         url,
 			Token:       "test-token",
 			Certificate: "",

@@ -64,7 +64,7 @@ func TestJobServiceGet(t *testing.T) {
 			Input:      9000,
 			Data:       `{"detail":"Not found."}`,
 			StatusCode: http.StatusNotFound,
-			Want: &gointelowl.IntelOwlError{
+			Want: &gointelowl.Error{
 				StatusCode: http.StatusNotFound,
 				Message:    `{"detail":"Not found."}`,
 			},
@@ -108,7 +108,7 @@ func TestJobServiceDownloadSample(t *testing.T) {
 		Input:      2,
 		Data:       doesNotHaveASampleResponseJsonString,
 		StatusCode: http.StatusBadRequest,
-		Want: &gointelowl.IntelOwlError{
+		Want: &gointelowl.Error{
 			StatusCode: http.StatusBadRequest,
 			Message:    doesNotHaveASampleResponseJsonString,
 		},
@@ -151,7 +151,7 @@ func TestJobServiceDelete(t *testing.T) {
 		Input:      300,
 		Data:       notFoundJson,
 		StatusCode: http.StatusNotFound,
-		Want: &gointelowl.IntelOwlError{
+		Want: &gointelowl.Error{
 			StatusCode: http.StatusNotFound,
 			Message:    notFoundJson,
 		},
@@ -191,7 +191,7 @@ func TestJobServiceKill(t *testing.T) {
 		Input:      300,
 		Data:       `{"detail":"Not found."}`,
 		StatusCode: http.StatusNotFound,
-		Want: &gointelowl.IntelOwlError{
+		Want: &gointelowl.Error{
 			StatusCode: http.StatusNotFound,
 			Message:    `{"detail":"Not found."}`,
 		},
@@ -200,7 +200,7 @@ func TestJobServiceKill(t *testing.T) {
 		Input:      71,
 		Data:       `{"errors":{"detail":"Job is not running"}}`,
 		StatusCode: http.StatusBadRequest,
-		Want: &gointelowl.IntelOwlError{
+		Want: &gointelowl.Error{
 			StatusCode: http.StatusBadRequest,
 			Message:    `{"errors":{"detail":"Job is not running"}}`,
 		},
@@ -251,7 +251,7 @@ func TestJobServiceKillAnalyzer(t *testing.T) {
 		},
 		Data:       `{"errors":{"analyzer report":"Not found."}}`,
 		StatusCode: http.StatusNotFound,
-		Want: &gointelowl.IntelOwlError{
+		Want: &gointelowl.Error{
 			StatusCode: http.StatusNotFound,
 			Message:    `{"errors":{"analyzer report":"Not found."}}`,
 		},
@@ -263,7 +263,7 @@ func TestJobServiceKillAnalyzer(t *testing.T) {
 		},
 		Data:       `{"errors":{"detail":"Plugin call is not running or pending"}}`,
 		StatusCode: http.StatusBadRequest,
-		Want: &gointelowl.IntelOwlError{
+		Want: &gointelowl.Error{
 			StatusCode: http.StatusBadRequest,
 			Message:    `{"errors":{"detail":"Plugin call is not running or pending"}}`,
 		},
