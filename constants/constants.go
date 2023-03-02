@@ -20,13 +20,13 @@ const (
 
 // These represent analyzer endpoints URL
 const (
-	ANALYZER_CONFIG_URL      = "/api/get_analyzer_configs"
+	ANALYZER_CONFIG_URL      = "/api/analyzer"
 	ANALYZER_HEALTHCHECK_URL = "/api/analyzer/%s/healthcheck"
 )
 
 // These represent connector endpoints URL
 const (
-	CONNECTOR_CONFIG_URL      = "/api/get_connector_configs"
+	CONNECTOR_CONFIG_URL      = "/api/connector"
 	CONNECTOR_HEALTHCHECK_URL = "/api/connector/%s/healthcheck"
 )
 
