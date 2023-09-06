@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"sort"
 
 	"github.com/intelowlproject/go-intelowl/constants"
@@ -21,7 +22,7 @@ type ConnectorConfig struct {
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/connector
 type ConnectorService struct {
-	client *IntelOwlClient
+	client *Client
 }
 
 // GetConfigs lists down every connector configuration in your IntelOwl instance.
@@ -31,8 +32,8 @@ type ConnectorService struct {
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/get_connector_configs
 func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]ConnectorConfig, error) {
 	requestUrl := connectorService.client.options.Url + constants.CONNECTOR_CONFIG_URL
-	contentType := "application/json"
-	method := "GET"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodGet
 	request, err := connectorService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return nil, err
@@ -70,8 +71,8 @@ func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]Co
 func (connectorService *ConnectorService) HealthCheck(ctx context.Context, connectorName string) (bool, error) {
 	route := connectorService.client.options.Url + constants.CONNECTOR_HEALTHCHECK_URL
 	requestUrl := fmt.Sprintf(route, connectorName)
-	contentType := "application/json"
-	method := "GET"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodGet
 	request, err := connectorService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return false, err

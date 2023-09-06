@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"sort"
 
 	"github.com/intelowlproject/go-intelowl/constants"
@@ -29,7 +30,7 @@ type AnalyzerConfig struct {
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyzer
 type AnalyzerService struct {
-	client *IntelOwlClient
+	client *Client
 }
 
 // GetConfigs lists down every analyzer configuration in your IntelOwl instance.
@@ -39,8 +40,8 @@ type AnalyzerService struct {
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/get_analyzer_configs
 func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]AnalyzerConfig, error) {
 	requestUrl := analyzerService.client.options.Url + constants.ANALYZER_CONFIG_URL
-	contentType := "application/json"
-	method := "GET"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodGet
 	request, err := analyzerService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return nil, err
@@ -62,7 +63,7 @@ func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]Anal
 	}
 	// * sorting them alphabetically
 	sort.Strings(analyzerNames)
-	analyzerConfigurationList := []AnalyzerConfig{}
+	var analyzerConfigurationList []AnalyzerConfig
 	for _, analyzerName := range analyzerNames {
 		analyzerConfig := analyzerConfigurationResponse[analyzerName]
 		analyzerConfigurationList = append(analyzerConfigurationList, analyzerConfig)
@@ -78,8 +79,8 @@ func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]Anal
 func (analyzerService *AnalyzerService) HealthCheck(ctx context.Context, analyzerName string) (bool, error) {
 	route := analyzerService.client.options.Url + constants.ANALYZER_HEALTHCHECK_URL
 	requestUrl := fmt.Sprintf(route, analyzerName)
-	contentType := "application/json"
-	method := "GET"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodGet
 	request, err := analyzerService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return false, err

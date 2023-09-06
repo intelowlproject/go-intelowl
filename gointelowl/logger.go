@@ -14,16 +14,16 @@ type LoggerParams struct {
 	Level     logrus.Level
 }
 
-// IntelOwlLogger represents a logger to be used by the developer.
-// IntelOwlLogger implements the Logrus logger.
+// Logger represents a logger to be used by the developer.
+// Logger implements the Logrus logger.
 //
 // Logrus docs: https://github.com/sirupsen/logrus
-type IntelOwlLogger struct {
+type Logger struct {
 	Logger *logrus.Logger
 }
 
-// Init initializes the IntelOwlLogger via LoggerParams
-func (intelOwlLogger *IntelOwlLogger) Init(loggerParams *LoggerParams) {
+// Init initializes the Logger via LoggerParams
+func (intelOwlLogger *Logger) Init(loggerParams *LoggerParams) {
 	logger := logrus.New()
 
 	// Where to log the data!

@@ -74,7 +74,7 @@ type JobListResponse struct {
 //
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs
 type JobService struct {
-	client *IntelOwlClient
+	client *Client
 }
 
 // List fetches all the jobs in your IntelOwl instance.
@@ -84,8 +84,8 @@ type JobService struct {
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_list
 func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error) {
 	requestUrl := jobService.client.options.Url + constants.BASE_JOB_URL
-	contentType := "application/json"
-	method := "GET"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodGet
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return nil, err
@@ -95,9 +95,9 @@ func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error
 		return nil, err
 	}
 	jobList := JobListResponse{}
-	marashalError := json.Unmarshal(successResp.Data, &jobList)
-	if marashalError != nil {
-		return nil, marashalError
+	marshalError := json.Unmarshal(successResp.Data, &jobList)
+	if marshalError != nil {
+		return nil, marshalError
 	}
 
 	return &jobList, nil
@@ -111,8 +111,8 @@ func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error
 func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, error) {
 	route := jobService.client.options.Url + constants.SPECIFIC_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId)
-	contentType := "application/json"
-	method := "GET"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodGet
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return nil, err
@@ -137,8 +137,8 @@ func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, erro
 func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) ([]byte, error) {
 	route := jobService.client.options.Url + constants.DOWNLOAD_SAMPLE_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId)
-	contentType := "application/json"
-	method := "GET"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodGet
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return nil, err
@@ -158,8 +158,8 @@ func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) 
 func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, error) {
 	route := jobService.client.options.Url + constants.SPECIFIC_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId)
-	contentType := "application/json"
-	method := "DELETE"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodDelete
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return false, err
@@ -182,8 +182,8 @@ func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, e
 func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, error) {
 	route := jobService.client.options.Url + constants.KILL_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId)
-	contentType := "application/json"
-	method := "PATCH"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodPatch
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return false, err
@@ -206,8 +206,8 @@ func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, err
 func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
 	route := jobService.client.options.Url + constants.KILL_ANALYZER_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId, analyzerName)
-	contentType := "application/json"
-	method := "PATCH"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodPatch
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return false, err
@@ -230,8 +230,8 @@ func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, an
 func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
 	route := jobService.client.options.Url + constants.RETRY_ANALYZER_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId, analyzerName)
-	contentType := "application/json"
-	method := "PATCH"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodPatch
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return false, err
@@ -254,8 +254,8 @@ func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, a
 func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
 	route := jobService.client.options.Url + constants.KILL_CONNECTOR_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId, connectorName)
-	contentType := "application/json"
-	method := "PATCH"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodPatch
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return false, err
@@ -278,8 +278,8 @@ func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, c
 func (jobService *JobService) RetryConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
 	route := jobService.client.options.Url + constants.RETRY_CONNECTOR_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId, connectorName)
-	contentType := "application/json"
-	method := "PATCH"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodPatch
 	request, err := jobService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return false, err

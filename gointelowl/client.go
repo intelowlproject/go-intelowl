@@ -9,15 +9,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
 	"time"
 )
 
-// IntelOwlError represents an error that has occurred when communicating with IntelOwl.
-type IntelOwlError struct {
+// Error represents an error that has occurred when communicating with IntelOwl.
+type Error struct {
 	StatusCode int
 	Message    string
 	Response   *http.Response
@@ -25,14 +24,14 @@ type IntelOwlError struct {
 
 // Error lets you implement the error interface.
 // This is used for making custom go errors.
-func (intelOwlError *IntelOwlError) Error() string {
+func (intelOwlError *Error) Error() string {
 	errorMessage := fmt.Sprintf("Status Code: %d \n Error: %s", intelOwlError.StatusCode, intelOwlError.Message)
 	return errorMessage
 }
 
-// newIntelOwlError lets you easily create new IntelOwlErrors.
-func newIntelOwlError(statusCode int, message string, response *http.Response) *IntelOwlError {
-	return &IntelOwlError{
+// newError lets you easily create new Errors.
+func newError(statusCode int, message string, response *http.Response) *Error {
+	return &Error{
 		StatusCode: statusCode,
 		Message:    message,
 		Response:   response,
@@ -44,8 +43,8 @@ type successResponse struct {
 	Data       []byte
 }
 
-// IntelOwlClientOptions represents the fields needed to configure and use the IntelOwlClient
-type IntelOwlClientOptions struct {
+// ClientOptions represents the fields needed to configure and use the Client
+type ClientOptions struct {
 	Url   string `json:"url"`
 	Token string `json:"token"`
 	// Certificate represents your SSL cert: path to the cert file!
@@ -54,16 +53,16 @@ type IntelOwlClientOptions struct {
 	Timeout uint64 `json:"timeout"`
 }
 
-// IntelOwlClient handles all the communication with your IntelOwl instance.
-type IntelOwlClient struct {
-	options          *IntelOwlClientOptions
+// Client handles all the communication with your IntelOwl instance.
+type Client struct {
+	options          *ClientOptions
 	client           *http.Client
 	TagService       *TagService
 	JobService       *JobService
 	AnalyzerService  *AnalyzerService
 	ConnectorService *ConnectorService
 	UserService      *UserService
-	Logger           *IntelOwlLogger
+	Logger           *Logger
 }
 
 // TLP represents an enum for the TLP attribute used in IntelOwl's REST API.
@@ -113,7 +112,7 @@ func ParseTLP(s string) TLP {
 }
 
 // Implementing the MarshalJSON interface to make our custom Marshal for the enum
-func (tlp TLP) MarshalJSON() ([]byte, error) {
+func (tlp *TLP) MarshalJSON() ([]byte, error) {
 	return json.Marshal(tlp.String())
 }
 
@@ -129,8 +128,8 @@ func (tlp *TLP) UnmarshalJSON(data []byte) (err error) {
 	return nil
 }
 
-// NewIntelOwlClient lets you easily create a new IntelOwlClient by providing IntelOwlClientOptions, http.Clients, and LoggerParams.
-func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, loggerParams *LoggerParams) IntelOwlClient {
+// NewClient lets you easily create a new Client by providing ClientOptions, http.Clients, and LoggerParams.
+func NewClient(options *ClientOptions, httpClient *http.Client, loggerParams *LoggerParams) Client {
 
 	var timeout time.Duration
 
@@ -148,7 +147,7 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, 
 	}
 
 	// configuring the client
-	client := IntelOwlClient{
+	client := Client{
 		options: options,
 		client:  httpClient,
 	}
@@ -171,33 +170,33 @@ func NewIntelOwlClient(options *IntelOwlClientOptions, httpClient *http.Client, 
 	}
 
 	// configuring the logger!
-	client.Logger = &IntelOwlLogger{}
+	client.Logger = &Logger{}
 	client.Logger.Init(loggerParams)
 
 	return client
 }
 
-// NewIntelOwlClientThroughJsonFile lets you create a new IntelOwlClient through a JSON file that contains your IntelOwlClientOptions
-func NewIntelOwlClientThroughJsonFile(filePath string, httpClient *http.Client, loggerParams *LoggerParams) (*IntelOwlClient, error) {
+// NewClientFromJsonFile lets you create a new Client through a JSON file that contains your ClientOptions
+func NewClientFromJsonFile(filePath string, httpClient *http.Client, loggerParams *LoggerParams) (*Client, error) {
 	optionsBytes, err := os.ReadFile(filePath)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Could not read %s", filePath)
-		intelOwlError := newIntelOwlError(400, errorMessage, nil)
+		intelOwlError := newError(400, errorMessage, nil)
 		return nil, intelOwlError
 	}
 
-	intelOwlClientOptions := &IntelOwlClientOptions{}
+	intelOwlClientOptions := &ClientOptions{}
 	if unmarshalError := json.Unmarshal(optionsBytes, &intelOwlClientOptions); unmarshalError != nil {
 		return nil, unmarshalError
 	}
 
-	intelOwlClient := NewIntelOwlClient(intelOwlClientOptions, httpClient, loggerParams)
+	intelOwlClient := NewClient(intelOwlClientOptions, httpClient, loggerParams)
 
 	return &intelOwlClient, nil
 }
 
 // buildRequest is used for building requests.
-func (client *IntelOwlClient) buildRequest(ctx context.Context, method string, contentType string, body io.Reader, url string) (*http.Request, error) {
+func (client *Client) buildRequest(ctx context.Context, method string, contentType string, body io.Reader, url string) (*http.Request, error) {
 	request, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
 		return nil, err
@@ -211,7 +210,7 @@ func (client *IntelOwlClient) buildRequest(ctx context.Context, method string, c
 }
 
 // newRequest is used for making requests.
-func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Request) (*successResponse, error) {
+func (client *Client) newRequest(ctx context.Context, request *http.Request) (*successResponse, error) {
 	response, err := client.client.Do(request)
 
 	// Checking for context errors such as reaching the deadline and/or Timeout
@@ -226,17 +225,17 @@ func (client *IntelOwlClient) newRequest(ctx context.Context, request *http.Requ
 
 	defer response.Body.Close()
 
-	msgBytes, err := ioutil.ReadAll(response.Body)
+	msgBytes, err := io.ReadAll(response.Body)
 	statusCode := response.StatusCode
 	if err != nil {
 		errorMessage := fmt.Sprintf("Could not convert JSON response. Status code: %d", statusCode)
-		intelOwlError := newIntelOwlError(statusCode, errorMessage, response)
+		intelOwlError := newError(statusCode, errorMessage, response)
 		return nil, intelOwlError
 	}
 
 	if statusCode < http.StatusOK || statusCode >= http.StatusBadRequest {
 		errorMessage := string(msgBytes)
-		intelOwlError := newIntelOwlError(statusCode, errorMessage, response)
+		intelOwlError := newError(statusCode, errorMessage, response)
 		return nil, intelOwlError
 	}
 

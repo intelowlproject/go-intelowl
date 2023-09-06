@@ -14,8 +14,8 @@ For this example I'll be using the tag params!
 */
 func main() {
 
-	// Configuring the IntelOwlClient!
-	clientOptions := gointelowl.IntelOwlClientOptions{
+	// Configuring the Client!
+	clientOptions := gointelowl.ClientOptions{
 		Url:         "PUT-YOUR-INTELOWL-INSTANCE-URL-HERE",
 		Token:       "PUT-YOUR-TOKEN-HERE",
 		Certificate: "",
@@ -28,7 +28,7 @@ func main() {
 	}
 
 	// Making the client!
-	client := gointelowl.NewIntelOwlClient(
+	client := gointelowl.NewClient(
 		&clientOptions,
 		nil,
 		loggerParams,

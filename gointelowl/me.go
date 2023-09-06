@@ -29,7 +29,7 @@ type User struct {
 }
 
 type UserService struct {
-	client *IntelOwlClient
+	client *Client
 }
 
 type Owner struct {
@@ -77,8 +77,8 @@ type InvitationParams struct {
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_access_retrieve
 func (userService *UserService) Access(ctx context.Context) (*User, error) {
 	requestUrl := userService.client.options.Url + constants.USER_DETAILS_URL
-	contentType := "application/json"
-	method := "GET"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodGet
 	request, err := userService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return nil, err
@@ -101,8 +101,8 @@ func (userService *UserService) Access(ctx context.Context) (*User, error) {
 // IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_list
 func (userService *UserService) Organization(ctx context.Context) (*Organization, error) {
 	requestUrl := userService.client.options.Url + constants.ORGANIZATION_URL
-	contentType := "application/json"
-	method := "GET"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodGet
 	request, err := userService.client.buildRequest(ctx, method, contentType, nil, requestUrl)
 	if err != nil {
 		return nil, err
@@ -131,8 +131,8 @@ func (userService *UserService) CreateOrganization(ctx context.Context, organiza
 	if err != nil {
 		return nil, err
 	}
-	contentType := "application/json"
-	method := "POST"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodPost
 	body := bytes.NewBuffer(orgJson)
 	request, err := userService.client.buildRequest(ctx, method, contentType, body, requestUrl)
 	if err != nil {
@@ -163,8 +163,8 @@ func (userService *UserService) InviteToOrganization(ctx context.Context, member
 	if err != nil {
 		return nil, err
 	}
-	contentType := "application/json"
-	method := "POST"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodPost
 	body := bytes.NewBuffer(memberJson)
 	request, err := userService.client.buildRequest(ctx, method, contentType, body, requestUrl)
 	if err != nil {
@@ -195,8 +195,8 @@ func (userService *UserService) RemoveMemberFromOrganization(ctx context.Context
 	if err != nil {
 		return false, err
 	}
-	contentType := "application/json"
-	method := "POST"
+	contentType := constants.ContentTypeJSON
+	method := http.MethodPost
 	body := bytes.NewBuffer(memberJson)
 	request, err := userService.client.buildRequest(ctx, method, contentType, body, requestUrl)
 	if err != nil {
