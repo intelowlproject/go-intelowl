@@ -66,7 +66,7 @@ type MultipleAnalysisResponse struct {
 //
 //	Endpoint: POST /api/analyze_observable
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_observable
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/analyze_observable
 func (client *IntelOwlClient) CreateObservableAnalysis(ctx context.Context, params *ObservableAnalysisParams) (*AnalysisResponse, error) {
 	requestUrl := client.options.Url + constants.ANALYZE_OBSERVABLE_URL
 	method := "POST"
@@ -95,7 +95,7 @@ func (client *IntelOwlClient) CreateObservableAnalysis(ctx context.Context, para
 //
 //	Endpoint: POST /api/analyze_multiple_observables
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_multiple_observables
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/analyze_multiple_observables
 func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Context, params *MultipleObservableAnalysisParams) (*MultipleAnalysisResponse, error) {
 	requestUrl := client.options.Url + constants.ANALYZE_MULTIPLE_OBSERVABLES_URL
 	method := "POST"
@@ -123,7 +123,7 @@ func (client *IntelOwlClient) CreateMultipleObservableAnalysis(ctx context.Conte
 //
 //	Endpoint: POST /api/analyze_file
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_file
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/analyze_file
 func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalysisParams *FileAnalysisParams) (*AnalysisResponse, error) {
 	requestUrl := client.options.Url + constants.ANALYZE_FILE_URL
 	// * Making the multiform data
@@ -201,7 +201,7 @@ func (client *IntelOwlClient) CreateFileAnalysis(ctx context.Context, fileAnalys
 //
 //	Endpoint: POST /api/analyze_mutliple_files
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyze_multiple_files
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/analyze_multiple_files
 func (client *IntelOwlClient) CreateMultipleFileAnalysis(ctx context.Context, fileAnalysisParams *MultipleFileAnalysisParams) (*MultipleAnalysisResponse, error) {
 	requestUrl := client.options.Url + constants.ANALYZE_MULTIPLE_FILES_URL
 	// * Making the multiform data

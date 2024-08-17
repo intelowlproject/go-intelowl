@@ -26,7 +26,7 @@ type Tag struct {
 
 // TagService handles communication with tag related methods of IntelOwl API.
 //
-// IntelOwl REST API tag docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags
+// IntelOwl REST API tag docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/tags
 type TagService struct {
 	client *IntelOwlClient
 }
@@ -43,7 +43,7 @@ func checkTagID(id uint64) error {
 //
 //	Endpoint: GET "/api/tags"
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_list
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/tags/operation/tags_list
 func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
 	requestUrl := tagService.client.options.Url + constants.BASE_TAG_URL
 	contentType := "application/json"
@@ -69,7 +69,7 @@ func (tagService *TagService) List(ctx context.Context) (*[]Tag, error) {
 //
 //	Endpoint: GET "/api/tags/{id}"
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_retrieve
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/tags/operation/tags_retrieve
 func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, error) {
 	if err := checkTagID(tagId); err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ func (tagService *TagService) Get(ctx context.Context, tagId uint64) (*Tag, erro
 //
 //	Endpoint: POST "/api/tags/"
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_create
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/tags/operation/tags_create
 func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) (*Tag, error) {
 	requestUrl := tagService.client.options.Url + constants.BASE_TAG_URL
 	tagJson, err := json.Marshal(tagParams)
@@ -128,7 +128,7 @@ func (tagService *TagService) Create(ctx context.Context, tagParams *TagParams) 
 //
 //	Endpoint: PUT "/api/tags/{id}"
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_update
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/tags/operation/tags_update
 func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParams *TagParams) (*Tag, error) {
 	route := tagService.client.options.Url + constants.SPECIFIC_TAG_URL
 	requestUrl := fmt.Sprintf(route, tagId)
@@ -161,7 +161,7 @@ func (tagService *TagService) Update(ctx context.Context, tagId uint64, tagParam
 //
 //	Endpoint: DELETE "/api/tags/{id}"
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/tags/operation/tags_destroy
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/tags/operation/tags_destroy
 func (tagService *TagService) Delete(ctx context.Context, tagId uint64) (bool, error) {
 	if err := checkTagID(tagId); err != nil {
 		return false, err
