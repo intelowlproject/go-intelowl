@@ -127,8 +127,8 @@ Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE.
 
 # Links
 - [Intelowl](https://github.com/intelowlproject/IntelOwl)
-- [Documentation](https://intelowl.readthedocs.io/en/latest/)
-- [API documentation](https://intelowl.readthedocs.io/en/latest/Redoc.html)
+- [Documentation](https://intelowlproject.github.io/docs/)
+- [API documentation](https://intelowlproject.github.io/docs/IntelOwl/api_docs/)
 - [Examples](./examples/)
 
 # FAQ

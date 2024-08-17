@@ -27,7 +27,7 @@ type AnalyzerConfig struct {
 
 // AnalyzerService handles communication with analyzer related methods of the IntelOwl API.
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyzer
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/analyzer
 type AnalyzerService struct {
 	client *IntelOwlClient
 }
@@ -36,7 +36,7 @@ type AnalyzerService struct {
 //
 //	Endpoint: GET /api/get_analyzer_configs
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/get_analyzer_configs
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/get_analyzer_configs
 func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]AnalyzerConfig, error) {
 	requestUrl := analyzerService.client.options.Url + constants.ANALYZER_CONFIG_URL
 	contentType := "application/json"
@@ -74,7 +74,7 @@ func (analyzerService *AnalyzerService) GetConfigs(ctx context.Context) (*[]Anal
 //
 //	Endpoint: GET /api/analyzer/{NameOfAnalyzer}/healthcheck
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/analyzer/operation/analyzer_healthcheck_retrieve
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/analyzer/operation/analyzer_healthcheck_retrieve
 func (analyzerService *AnalyzerService) HealthCheck(ctx context.Context, analyzerName string) (bool, error) {
 	route := analyzerService.client.options.Url + constants.ANALYZER_HEALTHCHECK_URL
 	requestUrl := fmt.Sprintf(route, analyzerName)

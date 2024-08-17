@@ -74,7 +74,7 @@ type InvitationParams struct {
 //
 //	Endpoint: GET /api/me/access
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_access_retrieve
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/me/operation/me_access_retrieve
 func (userService *UserService) Access(ctx context.Context) (*User, error) {
 	requestUrl := userService.client.options.Url + constants.USER_DETAILS_URL
 	contentType := "application/json"
@@ -98,7 +98,7 @@ func (userService *UserService) Access(ctx context.Context) (*User, error) {
 //
 //	Endpoint: GET /api/me/organization
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_list
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/me/operation/me_organization_list
 func (userService *UserService) Organization(ctx context.Context) (*Organization, error) {
 	requestUrl := userService.client.options.Url + constants.ORGANIZATION_URL
 	contentType := "application/json"
@@ -123,7 +123,7 @@ func (userService *UserService) Organization(ctx context.Context) (*Organization
 //
 //	Endpoint: POST /api/me/organization
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_create
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/me/operation/me_organization_create
 func (userService *UserService) CreateOrganization(ctx context.Context, organizationParams *OrganizationParams) (*Organization, error) {
 	requestUrl := userService.client.options.Url + constants.ORGANIZATION_URL
 	// Getting the relevant JSON data
@@ -155,7 +155,7 @@ func (userService *UserService) CreateOrganization(ctx context.Context, organiza
 //
 //	Endpoint: POST /api/me/organization/invite
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_invite_create
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/me/operation/me_organization_invite_create
 func (userService *UserService) InviteToOrganization(ctx context.Context, memberParams *MemberParams) (*Invite, error) {
 	requestUrl := userService.client.options.Url + constants.INVITE_TO_ORGANIZATION_URL
 	// Getting the relevant JSON data
@@ -187,7 +187,7 @@ func (userService *UserService) InviteToOrganization(ctx context.Context, member
 //
 //	Endpoint: POST /api/me/organization/remove_member
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/me/operation/me_organization_create
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/me/operation/me_organization_create
 func (userService *UserService) RemoveMemberFromOrganization(ctx context.Context, memberParams *MemberParams) (bool, error) {
 	requestUrl := userService.client.options.Url + constants.REMOVE_MEMBER_FROM_ORGANIZATION_URL
 	// Getting the relevant JSON data

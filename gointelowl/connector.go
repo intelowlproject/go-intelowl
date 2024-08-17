@@ -19,7 +19,7 @@ type ConnectorConfig struct {
 
 // ConnectorService handles communication with connector related methods of the IntelOwl API.
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/connector
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/connector
 type ConnectorService struct {
 	client *IntelOwlClient
 }
@@ -28,7 +28,7 @@ type ConnectorService struct {
 //
 //	Endpoint: GET /api/get_connector_configs
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/get_connector_configs
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/get_connector_configs
 func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]ConnectorConfig, error) {
 	requestUrl := connectorService.client.options.Url + constants.CONNECTOR_CONFIG_URL
 	contentType := "application/json"
@@ -66,7 +66,7 @@ func (connectorService *ConnectorService) GetConfigs(ctx context.Context) (*[]Co
 //
 //	Endpoint: GET /api/connector/{NameOfConnector}/healthcheck
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/connector/operation/connector_healthcheck_retrieve
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/connector/operation/connector_healthcheck_retrieve
 func (connectorService *ConnectorService) HealthCheck(ctx context.Context, connectorName string) (bool, error) {
 	route := connectorService.client.options.Url + constants.CONNECTOR_HEALTHCHECK_URL
 	requestUrl := fmt.Sprintf(route, connectorName)

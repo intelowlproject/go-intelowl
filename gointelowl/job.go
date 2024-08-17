@@ -72,7 +72,7 @@ type JobListResponse struct {
 
 // JobService handles communication with job related methods of IntelOwl API.
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/jobs
 type JobService struct {
 	client *IntelOwlClient
 }
@@ -81,7 +81,7 @@ type JobService struct {
 //
 //	Endpoint: GET /api/jobs
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_list
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/jobs/operation/jobs_list
 func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error) {
 	requestUrl := jobService.client.options.Url + constants.BASE_JOB_URL
 	contentType := "application/json"
@@ -107,7 +107,7 @@ func (jobService *JobService) List(ctx context.Context) (*JobListResponse, error
 //
 //	Endpoint: GET /api/jobs/{jobID}
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_retrieve
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/jobs/operation/jobs_retrieve
 func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, error) {
 	route := jobService.client.options.Url + constants.SPECIFIC_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId)
@@ -133,7 +133,7 @@ func (jobService *JobService) Get(ctx context.Context, jobId uint64) (*Job, erro
 //
 //	Endpoint: GET /api/jobs/{jobID}/download_sample
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_download_sample_retrieve
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/jobs/operation/jobs_download_sample_retrieve
 func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) ([]byte, error) {
 	route := jobService.client.options.Url + constants.DOWNLOAD_SAMPLE_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId)
@@ -154,7 +154,7 @@ func (jobService *JobService) DownloadSample(ctx context.Context, jobId uint64) 
 //
 //	Endpoint: DELETE /api/jobs/{jobID}
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_destroy
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/jobs/operation/jobs_destroy
 func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, error) {
 	route := jobService.client.options.Url + constants.SPECIFIC_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId)
@@ -178,7 +178,7 @@ func (jobService *JobService) Delete(ctx context.Context, jobId uint64) (bool, e
 //
 //	Endpoint: PATCH /api/jobs/{jobID}/kill
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_kill_partial_update
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/jobs/operation/jobs_kill_partial_update
 func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, error) {
 	route := jobService.client.options.Url + constants.KILL_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId)
@@ -202,7 +202,7 @@ func (jobService *JobService) Kill(ctx context.Context, jobId uint64) (bool, err
 //
 //	Endpoint: PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/kill
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_analyzer_kill_partial_update
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/jobs/operation/jobs_analyzer_kill_partial_update
 func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
 	route := jobService.client.options.Url + constants.KILL_ANALYZER_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId, analyzerName)
@@ -226,7 +226,7 @@ func (jobService *JobService) KillAnalyzer(ctx context.Context, jobId uint64, an
 //
 //	Endpoint: PATCH /api/jobs/{jobID}/analyzer/{nameOfAnalyzer}/retry
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_analyzer_retry_partial_update
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/jobs/operation/jobs_analyzer_retry_partial_update
 func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, analyzerName string) (bool, error) {
 	route := jobService.client.options.Url + constants.RETRY_ANALYZER_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId, analyzerName)
@@ -250,7 +250,7 @@ func (jobService *JobService) RetryAnalyzer(ctx context.Context, jobId uint64, a
 //
 //	Endpoint: PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/kill
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_connector_kill_partial_update
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/jobs/operation/jobs_connector_kill_partial_update
 func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
 	route := jobService.client.options.Url + constants.KILL_CONNECTOR_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId, connectorName)
@@ -274,7 +274,7 @@ func (jobService *JobService) KillConnector(ctx context.Context, jobId uint64, c
 //
 //	Endpoint: PATCH /api/jobs/{jobID}/connector/{nameOfConnector}/retry
 //
-// IntelOwl REST API docs: https://intelowl.readthedocs.io/en/latest/Redoc.html#tag/jobs/operation/jobs_connector_retry_partial_update
+// IntelOwl REST API docs: https://intelowlproject.github.io/docs/IntelOwl/api_docs/#tag/jobs/operation/jobs_connector_retry_partial_update
 func (jobService *JobService) RetryConnector(ctx context.Context, jobId uint64, connectorName string) (bool, error) {
 	route := jobService.client.options.Url + constants.RETRY_CONNECTOR_JOB_URL
 	requestUrl := fmt.Sprintf(route, jobId, connectorName)
