@@ -18,6 +18,11 @@ const (
 	RETRY_CONNECTOR_JOB_URL = SPECIFIC_JOB_URL + "/connector/%s/retry"
 )
 
+// These represent playbook endpoints URL
+const (
+	BASE_PLAYBOOK_URL = "/api/playbook"
+)
+
 // These represent analyzer endpoints URL
 const (
 	ANALYZER_CONFIG_URL      = "/api/analyzer"
@@ -33,8 +38,10 @@ const (
 // These represent analyze endpoints URL
 const (
 	ANALYZE_OBSERVABLE_URL           = "/api/analyze_observable"
+	ANALYZE_OBSERVABLE_PLAYBOOK_URL  = "/api/playbook/analyze_multiple_observables"
 	ANALYZE_MULTIPLE_OBSERVABLES_URL = "/api/analyze_multiple_observables"
 	ANALYZE_FILE_URL                 = "/api/analyze_file"
+	ANALYZE_FILE_PLAYBOOK_URL        = "/api/playbook/analyze_multiple_files"
 	ANALYZE_MULTIPLE_FILES_URL       = "/api/analyze_multiple_files"
 )
 

@@ -49,7 +49,7 @@ func testError(t *testing.T, testData TestData, err error) {
 	if testData.StatusCode < http.StatusOK || testData.StatusCode >= http.StatusBadRequest {
 		diff := cmp.Diff(testData.Want, err, cmpopts.IgnoreFields(gointelowl.Error{}, "Response"))
 		if diff != "" {
-			t.Fatalf(diff)
+			t.Fatalf("%s", diff)
 		}
 	}
 }
@@ -60,7 +60,7 @@ func testWantData(t *testing.T, want interface{}, data interface{}) {
 	t.Helper()
 	diff := cmp.Diff(want, data)
 	if diff != "" {
-		t.Fatalf(diff)
+		t.Fatalf("%s", diff)
 	}
 }
 

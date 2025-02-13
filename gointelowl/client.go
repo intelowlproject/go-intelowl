@@ -59,6 +59,7 @@ type Client struct {
 	client           *http.Client
 	TagService       *TagService
 	JobService       *JobService
+	PlaybookService  *PlaybookService
 	AnalyzerService  *AnalyzerService
 	ConnectorService *ConnectorService
 	UserService      *UserService
@@ -159,6 +160,9 @@ func NewClient(options *ClientOptions, httpClient *http.Client, loggerParams *Lo
 	client.JobService = &JobService{
 		client: &client,
 	}
+	client.PlaybookService = &PlaybookService{
+		client: &client,
+	}
 	client.AnalyzerService = &AnalyzerService{
 		client: &client,
 	}
@@ -212,7 +216,6 @@ func (client *Client) buildRequest(ctx context.Context, method string, contentTy
 // newRequest is used for making requests.
 func (client *Client) newRequest(ctx context.Context, request *http.Request) (*successResponse, error) {
 	response, err := client.client.Do(request)
-
 	// Checking for context errors such as reaching the deadline and/or Timeout
 	if err != nil {
 		select {

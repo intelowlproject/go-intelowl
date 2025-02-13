@@ -56,6 +56,55 @@ func TestCreateObservableAnalysis(t *testing.T) {
 	}
 }
 
+func TestCreateObservablePlaybookAnalysis(t *testing.T) {
+	playbookAnalysisJsonString := `{"results":[{"job_id":3002,"analyzers_running":["AdGuard","Classic_DNS","CloudFlare_DNS","CloudFlare_Malicious_Detector","DNS0_EU","DNS0_EU_Malicious_Detector","Google_DNS","Quad9_DNS","Quad9_Malicious_Detector","UltraDNS_DNS","UltraDNS_Malicious_Detector"],"connectors_running":[],"visualizers_running":["DNS"],"playbook_running":"Dns","investigation":null,"status":"accepted","already_exists":false}],"count":1}`
+	playbookAnalysisResponse := gointelowl.MultipleAnalysisResponse{}
+	if unmarshalError := json.Unmarshal([]byte(playbookAnalysisJsonString), &playbookAnalysisResponse); unmarshalError != nil {
+		t.Fatalf("Error: %s", unmarshalError)
+	}
+
+	basicAnalysisParams := gointelowl.BasicAnalysisParams{
+		User:                 1,
+		Tlp:                  gointelowl.WHITE,
+		RuntimeConfiguration: map[string]interface{}{},
+		AnalyzersRequested:   []string{},
+		ConnectorsRequested:  []string{},
+		TagsLabels:           []string{},
+	}
+
+	testCases := make(map[string]TestData)
+	testCases["simple"] = TestData{
+		Input: gointelowl.ObservablePlaybookAnalysisParams{
+			BasicAnalysisParams:      basicAnalysisParams,
+			ObservableName:           "series9.io",
+			ObservableClassification: "domain",
+			PlaybookRequested:        "Dns",
+		},
+		Data:       playbookAnalysisJsonString,
+		StatusCode: http.StatusOK,
+		Want:       &playbookAnalysisResponse,
+	}
+
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
+			apiHandler.Handle(constants.ANALYZE_OBSERVABLE_PLAYBOOK_URL, serverHandler(t, testCase, "POST"))
+			ctx := context.Background()
+			playbookObservableParams, ok := testCase.Input.(gointelowl.ObservablePlaybookAnalysisParams)
+			if ok {
+				gottenMultipleAnalysisResponse, err := client.CreateObservablePlaybookAnalysis(ctx, &playbookObservableParams)
+				if err != nil {
+					testError(t, testCase, err)
+				} else {
+					testWantData(t, testCase.Want, gottenMultipleAnalysisResponse)
+				}
+			}
+		})
+	}
+
+}
+
 func TestCreateMultipleObservableAnalysis(t *testing.T) {
 	multiAnalysisJsonString := `{"count":2,"results":[{"job_id":263,"status":"accepted","warnings":[],"analyzers_running":["Classic_DNS","CryptoScamDB_CheckAPI","Darksearch_Query","FireHol_IPList","FileScan_Search","GoogleWebRisk","GreyNoiseCommunity","InQuest_IOCdb","InQuest_REPdb","InQuest_DFI","MalwareBazaar_Google_Observable","Mnemonic_PassiveDNS","Phishstats","Pulsedive_Active_IOC","Robtex_IP_Query","Robtex_Reverse_PDNS_Query","Stratosphere_Blacklist","TalosReputation","ThreatFox","Threatminer_PDNS","Threatminer_Reports_Tagging","TorProject","URLhaus","UrlScan_Search","WhoIs_RipeDB_Search","YETI"],"connectors_running":["YETI"]},{"job_id":264,"status":"accepted","warnings":[],"analyzers_running":["Classic_DNS","CryptoScamDB_CheckAPI","Darksearch_Query","FireHol_IPList","FileScan_Search","GoogleWebRisk","GreyNoiseCommunity","InQuest_IOCdb","InQuest_REPdb","InQuest_DFI","MalwareBazaar_Google_Observable","Mnemonic_PassiveDNS","Phishstats","Pulsedive_Active_IOC","Robtex_IP_Query","Robtex_Reverse_PDNS_Query","Stratosphere_Blacklist","TalosReputation","ThreatFox","Threatminer_PDNS","Threatminer_Reports_Tagging","TorProject","URLhaus","UrlScan_Search","WhoIs_RipeDB_Search","YETI"],"connectors_running":["YETI"]}]}`
 	multiAnalysisResponse := gointelowl.MultipleAnalysisResponse{}
@@ -156,6 +205,81 @@ func TestCreateFileAnalysis(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestCreateFilesPlaybookAnalysis(t *testing.T) {
+	playbookAnalysisJsonString := `{
+  "results": [
+    {
+      "job_id": 3003,
+      "analyzers_running": [
+        "ClamAV",
+        "Cymru_Hash_Registry_Get_File",
+        "File_Info",
+        "HashLookupServer_Get_File",
+        "MalwareBazaar_Get_File",
+        "Strings_Info",
+        "YARAify_File_Search",
+        "Yara"
+      ],
+      "connectors_running": [],
+      "visualizers_running": [],
+      "playbook_running": "Sample_Static_Analysis",
+      "investigation": null,
+      "status": "accepted",
+      "already_exists": true
+    }
+  ],
+  "count": 1
+}
+`
+	playbookAnalysisResponse := gointelowl.MultipleAnalysisResponse{}
+	if unmarshalError := json.Unmarshal([]byte(playbookAnalysisJsonString), &playbookAnalysisResponse); unmarshalError != nil {
+		t.Fatalf("Error: %s", unmarshalError)
+	}
+	fileDir := "./testFiles/"
+	fileName := "fileForAnalysis.txt"
+	filePath := path.Join(fileDir, fileName)
+	file, _ := os.Open(filePath)
+	defer file.Close()
+	basicAnalysisParams := gointelowl.BasicAnalysisParams{
+		User:                 1,
+		Tlp:                  gointelowl.WHITE,
+		RuntimeConfiguration: map[string]interface{}{},
+		AnalyzersRequested:   []string{},
+		ConnectorsRequested:  []string{},
+		TagsLabels:           []string{},
+	}
+	playbookFileParams := &gointelowl.FilePlaybookAnalysisParams{
+		BasicAnalysisParams: basicAnalysisParams,
+		PlaybookRequested:   "Sample_Static_Analysis",
+		File:                file,
+	}
+	testCases := make(map[string]TestData)
+	testCases["simple"] = TestData{
+		Input:      playbookFileParams,
+		Data:       playbookAnalysisJsonString,
+		StatusCode: http.StatusOK,
+		Want:       playbookAnalysisResponse,
+	}
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			client, apiHandler, closeServer := setup()
+			defer closeServer()
+			apiHandler.Handle(constants.ANALYZE_FILE_PLAYBOOK_URL, serverHandler(t, testCase, "POST"))
+			ctx := context.Background()
+			playbookFilesAnalysisParams, ok := testCase.Input.(gointelowl.FilePlaybookAnalysisParams)
+			if ok {
+				gottenFilePlaybookAnalysisResponse, err := client.CreateFilePlaybookAnalysis(ctx, &playbookFilesAnalysisParams)
+				if err != nil {
+					testError(t, testCase, err)
+				} else {
+					testWantData(t, testCase.Want, gottenFilePlaybookAnalysisResponse)
+				}
+			}
+		})
+	}
+
 }
 
 func TestCreateMultipleFilesAnalysis(t *testing.T) {

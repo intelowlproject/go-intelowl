@@ -29,6 +29,13 @@ type ObservableAnalysisParams struct {
 	ObservableClassification string `json:"classification"`
 }
 
+type ObservablePlaybookAnalysisParams struct {
+	BasicAnalysisParams
+	ObservableName           string `json:"observable_name"`
+	ObservableClassification string `json:"observable_classification"`
+	PlaybookRequested        string `json:"playbook_requested"`
+}
+
 // MultipleObservableAnalysisParams represents the fields needed to analyze multiple observables.
 type MultipleObservableAnalysisParams struct {
 	BasicAnalysisParams
@@ -41,6 +48,12 @@ type FileAnalysisParams struct {
 	File *os.File
 }
 
+type FilePlaybookAnalysisParams struct {
+	BasicAnalysisParams
+	PlaybookRequested string `json:"playbook_requested"`
+	File              *os.File
+}
+
 // MultipleFileAnalysisParams represents the fields needed to analyze multiple files.
 type MultipleFileAnalysisParams struct {
 	BasicAnalysisParams
@@ -49,11 +62,13 @@ type MultipleFileAnalysisParams struct {
 
 // AnalysisResponse represents a response returned by the API when you analyze an observable or file.
 type AnalysisResponse struct {
-	JobID             int      `json:"job_id"`
-	Status            string   `json:"status"`
-	Warnings          []string `json:"warnings"`
-	AnalyzersRunning  []string `json:"analyzers_running"`
-	ConnectorsRunning []string `json:"connectors_running"`
+	JobID              int      `json:"job_id"`
+	Status             string   `json:"status"`
+	Warnings           []string `json:"warnings"`
+	AnalyzersRunning   []string `json:"analyzers_running"`
+	ConnectorsRunning  []string `json:"connectors_running"`
+	PlaybooksRunning   string   `json:"playbook_running"`
+	VisualizersRunning []string `json:"visualizers_running"`
 }
 
 // MultipleAnalysisResponse represent a response returned by the API when you analyze multiple observables or files.
@@ -80,6 +95,37 @@ func (client *Client) CreateObservableAnalysis(ctx context.Context, params *Obse
 	}
 
 	analysisResponse := AnalysisResponse{}
+	successResp, err := client.newRequest(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	if unmarshalError := json.Unmarshal(successResp.Data, &analysisResponse); unmarshalError != nil {
+		return nil, unmarshalError
+	}
+	return &analysisResponse, nil
+
+}
+
+func (client *Client) CreateObservablePlaybookAnalysis(ctx context.Context, params *ObservablePlaybookAnalysisParams) (*MultipleAnalysisResponse, error) {
+	requestUrl := client.options.Url + constants.ANALYZE_OBSERVABLE_PLAYBOOK_URL
+	method := "POST"
+	contentType := "application/json"
+	data := map[string]interface{}{
+		"observables":           [][]string{{params.ObservableClassification, params.ObservableName}},
+		"playbook_requested":    params.PlaybookRequested,
+		"tags_labels":           params.TagsLabels,
+		"runtime_configuration": params.RuntimeConfiguration,
+		"tlp":                   params.Tlp.String(),
+	}
+
+	jsonData, _ := json.Marshal(data)
+
+	body := bytes.NewBuffer(jsonData)
+	request, err := client.buildRequest(ctx, method, contentType, body, requestUrl)
+	if err != nil {
+		return nil, err
+	}
+	analysisResponse := MultipleAnalysisResponse{}
 	successResp, err := client.newRequest(ctx, request)
 	if err != nil {
 		return nil, err
@@ -194,6 +240,71 @@ func (client *Client) CreateFileAnalysis(ctx context.Context, fileAnalysisParams
 	if unmarshalError := json.Unmarshal(successResp.Data, &analysisResponse); unmarshalError != nil {
 		return nil, unmarshalError
 	}
+	return &analysisResponse, nil
+}
+
+func (client *Client) CreateFilePlaybookAnalysis(ctx context.Context, fileAnalysisParams *FilePlaybookAnalysisParams) (*MultipleAnalysisResponse, error) {
+	requestUrl := client.options.Url + constants.ANALYZE_FILE_PLAYBOOK_URL
+	// * Making the multiform data
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	// * Adding the TLP field
+	writeTlpError := writer.WriteField("tlp", fileAnalysisParams.Tlp.String())
+	if writeTlpError != nil {
+		return nil, writeTlpError
+	}
+	// * Adding the runtimeconfiguration field
+	runTimeConfigurationJson, marshalError := json.Marshal(fileAnalysisParams.RuntimeConfiguration)
+	if marshalError != nil {
+		return nil, marshalError
+	}
+	runTimeConfigurationJsonString := string(runTimeConfigurationJson)
+	writeRuntimeError := writer.WriteField("runtime_configuration", runTimeConfigurationJsonString)
+	if writeRuntimeError != nil {
+		return nil, writeRuntimeError
+	}
+
+	// * Adding the Playbook field
+	writePlaybookError := writer.WriteField("playbook_requested", fileAnalysisParams.PlaybookRequested)
+	if writePlaybookError != nil {
+		return nil, writeTlpError
+	}
+
+	// * Adding the tag labels
+	for _, tagLabel := range fileAnalysisParams.TagsLabels {
+		writeTagLabelError := writer.WriteField("tags_labels", tagLabel)
+		if writeTagLabelError != nil {
+			return nil, writeTagLabelError
+		}
+	}
+
+	// * Adding the file!
+	filePart, _ := writer.CreateFormFile("files", filepath.Base(fileAnalysisParams.File.Name()))
+	_, writeFileError := io.Copy(filePart, fileAnalysisParams.File)
+	if writeFileError != nil {
+		writer.Close()
+		return nil, writeFileError
+	}
+	writer.Close()
+	//* building the request!
+	contentType := writer.FormDataContentType()
+	method := "POST"
+	request, err := client.buildRequest(ctx, method, contentType, body, requestUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	analysisResponse := MultipleAnalysisResponse{}
+	successResp, err := client.newRequest(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	if unmarshalError := json.Unmarshal(successResp.Data, &analysisResponse); unmarshalError != nil {
+		return nil, unmarshalError
+	}
+
 	return &analysisResponse, nil
 }
 
